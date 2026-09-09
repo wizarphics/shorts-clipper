@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shorts Clipper AI - Viral Video Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 29, 47, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #facc15;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 65%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      color: #a5b4fc;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 17px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .row-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .checkbox-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      user-select: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .checkbox-pill input {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), #4338ca);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(99, 102, 241, 0.45);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Status & Progress */
+    .status-box {
+      margin-top: 24px;
+      display: none;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .status-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* AI Viral Radar Styles */
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .discovery-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .discovery-card:hover {
+      transform: translateY(-2px);
+      border-color: #facc15;
+    }
+
+    .discovery-thumb {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .discovery-info {
+      padding: 12px;
+    }
+
+    .discovery-title {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .discovery-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .btn-clip-this {
+      width: 100%;
+      background: rgba(250, 204, 21, 0.15);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: #facc15;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-clip-this:hover {
+      background: #facc15;
+      color: #0b0f19;
+    }
+    /* =========================================================
+       macOS Finder Window & File Explorer Experience
+       ========================================================= */
+    .finder-window {
+      background: rgba(18, 24, 38, 0.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      margin-top: 10px;
+    }
+
+    /* Finder Title Bar / Header */
+    .finder-titlebar {
+      height: 48px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      user-select: none;
+    }
+
+    .finder-traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 60px;
+    }
+
+    .traffic-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    }
+    .traffic-dot.close { background: #ff5f56; }
+    .traffic-dot.min { background: #ffbd2e; }
+    .traffic-dot.max { background: #27c93f; }
+
+    .finder-nav-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      margin: 0 16px;
+    }
+
+    .finder-nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .finder-nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+    .finder-nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .finder-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #cbd5e1;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 480px;
+    }
+
+    .finder-crumb-link {
+      color: #94a3b8;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s;
+    }
+    .finder-crumb-link:hover {
+      color: #38bdf8;
+    }
+    .finder-crumb-active {
+      color: #f8fafc;
+      font-weight: 600;
+    }
+
+    .finder-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .finder-item-badge {
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Finder Workspace Canvas */
+    .finder-canvas {
+      min-height: 400px;
+      padding: 28px 32px;
+      position: relative;
+    }
+
+    /* Finder Grid: Engineered for 3-4 folders per row */
+    .finder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px 20px;
+      align-items: stretch;
+    }
+
+    /* Video Files Grid: When inside a folder, keep standard 9:16 vertical ratio */
+    .finder-grid.files-mode {
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 20px 18px;
+    }
+
+    /* macOS Finder Folder Item - Vertical Stacked Card Layout */
+    .finder-folder-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 22px 16px 18px;
+      border-radius: 16px;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .finder-folder-item:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(56, 189, 248, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+    }
+
+    .finder-folder-item:active {
+      transform: translateY(-1px);
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    /* Constrained macOS folder icon graphic */
+    .finder-folder-graphic {
+      width: 76px;
+      height: 62px;
+      flex-shrink: 0;
+      position: relative;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+      transition: transform 0.18s ease;
+    }
+
+    .finder-folder-item:hover .finder-folder-graphic {
+      transform: scale(1.05);
+    }
+
+    /* Realistic macOS folder SVG style */
+    .folder-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .finder-folder-details {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .finder-folder-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+      margin-bottom: 8px;
+      text-align: center;
+      transition: color 0.15s ease;
+      min-height: 35px; /* keep consistent height across 1 or 2 lines */
+    }
+
+    .finder-folder-item:hover .finder-folder-label {
+      color: #38bdf8;
+    }
+
+    .finder-folder-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .finder-folder-count-pill {
+      background: rgba(250, 204, 21, 0.14);
+      color: #facc15;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(250, 204, 21, 0.25);
+      letter-spacing: 0.2px;
+    }
+
+    .finder-folder-size {
+      color: #94a3b8;
+      font-size: 11px;
+    }
+
+    .finder-folder-del {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.85);
+      color: white;
+      border: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      z-index: 5;
+    }
+
+    .finder-folder-item:hover .finder-folder-del {
+      display: flex;
+    }
+
+    .finder-folder-del:hover {
+      background: #ef4444;
+      transform: scale(1.15);
+    }
+
+    /* macOS Video File Item (Clean 9:16 vertical card inside folder) */
+    .finder-file-item {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.18s ease;
+      position: relative;
+    }
+
+    .finder-file-item:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.5);
+    }
+
+    .finder-thumb-wrap {
+      width: 100%;
+      aspect-ratio: 9 / 14;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #090d16;
+      position: relative;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .finder-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .finder-thumb-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+    }
+
+    .finder-thumb-play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .finder-file-item:hover .finder-thumb-play-overlay {
+      opacity: 1;
+    }
+
+    .play-bubble {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      padding-left: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transform: scale(0.9);
+      transition: transform 0.15s ease;
+    }
+
+    .finder-file-item:hover .play-bubble {
+      transform: scale(1);
+    }
+
+    .finder-duration-tag {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 5px;
+      letter-spacing: 0.3px;
+    }
+
+    .finder-file-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+      margin-bottom: 4px;
+    }
+
+    .finder-file-item:hover .finder-file-label {
+      color: #38bdf8;
+    }
+
+    .finder-file-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* QuickLook Modal (macOS Spacebar Inspection) */
+    .quicklook-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: qlFadeIn 0.18s ease-out;
+    }
+
+    @keyframes qlFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .quicklook-window {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quicklook-titlebar {
+      height: 44px;
+      padding: 0 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .quicklook-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f8fafc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 320px;
+    }
+
+    .quicklook-close {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .quicklook-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .quicklook-player-box {
+      width: 100%;
+      background: #000;
+      position: relative;
+      max-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quicklook-player-box video {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .quicklook-footer {
+      padding: 14px 18px;
+      background: #0f172a;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .quicklook-dock {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dock-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .dock-icon-btn:hover {
+      transform: translateY(-2px);
+      color: white;
+    }
+
+    .dock-icon-btn.yt:hover { background: #ef4444; border-color: #ef4444; }
+    .dock-icon-btn.tk:hover { background: #06b6d4; border-color: #06b6d4; }
+    .dock-icon-btn.ig:hover { background: #ec4899; border-color: #ec4899; }
+    .dock-icon-btn.download:hover { background: #6366f1; border-color: #6366f1; }
+    .dock-icon-btn.delete:hover { background: #dc2626; border-color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">⚡ Powered by Gemini AI & Whisper</div>
+      <h1>AI Shorts Clipper</h1>
+      <p class="subtitle">Turn long YouTube videos and podcasts into high-retention 9:16 vertical shorts with dynamic animated captions.</p>
+    </header>
+
+    <div class="main-grid">
+      <div class="card">
+        <form id="clipper-form">
+          <div class="input-group">
+            <label for="url">YouTube Video URL or Local MP4 Path</label>
+            <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=..." required />
+          </div>
+
+          <div class="row-options">
+            <div>
+              <label for="target-duration">Target Duration / Platform</label>
+              <select id="target-duration">
+                <option value="short">Shorts & Reels (25s - 59s)</option>
+                <option value="tiktok_long" selected>TikTok Monetized (61s - 120s) 💰</option>
+                <option value="extended">Extended Highlight (60s - 180s)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="num-clips">Clips to Extract</label>
+              <select id="num-clips">
+                <option value="1">1 Clip</option>
+                <option value="3" selected>3 Clips (Recommended)</option>
+                <option value="5">5 Clips</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="model-size">Transcription Model</label>
+              <select id="model-size">
+                <option value="tiny">Tiny (Fastest)</option>
+                <option value="base" selected>Base (Recommended)</option>
+                <option value="small">Small (High Accuracy)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="cookies-browser">Browser Cookies (Optional)</label>
+              <select id="cookies-browser">
+                <option value="" selected>None (Default)</option>
+                <option value="chrome">Google Chrome</option>
+                <option value="safari">Apple Safari</option>
+                <option value="firefox">Mozilla Firefox</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row-options" style="margin-bottom: 16px;">
+            <label class="checkbox-pill">
+              <input type="checkbox" id="burn-captions" checked />
+              <span>✨ Dynamic Animated Subtitles</span>
+            </label>
+
+            <label class="checkbox-pill">
+              <input type="checkbox" id="crop-9-16" checked />
+              <span>📱 9:16 Vertical Cropping</span>
+            </label>
+
+            <label class="checkbox-pill" title="Uses computer vision to detect speaker faces and dynamic crop around them instead of blind center crop">
+              <input type="checkbox" id="smart-face-tracking" checked />
+              <span>🎯 Smart Speaker Face Tracking</span>
+            </label>
+          </div>
+
+          <div class="row-options" style="margin-bottom: 24px;">
+            <label class="checkbox-pill">
+              <input type="checkbox" id="add-music" checked />
+              <span>🎵 Background Tension Music Bed</span>
+            </label>
+
+            <label class="checkbox-pill">
+              <input type="checkbox" id="add-whoosh" checked />
+              <span>💨 Intro Hook Whoosh Sound Effect</span>
+            </label>
+
+            <label class="checkbox-pill">
+              <input type="checkbox" id="add-banner" checked />
+              <span>🏷️ Top Viral Glass Banner</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submit-btn">
+            <span>✨ Generate Viral Shorts</span>
+          </button>
+        </form>
+
+        <div class="status-box" id="status-box">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong id="status-title" style="font-size: 14px;">Processing...</strong>
+            <span id="status-pct" style="font-weight: 700; color: #a855f7;">0%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+          </div>
+          <div class="status-text">
+            <span id="status-desc">Initializing...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Viral Radar Card -->
+      <div class="card" style="margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+              🔍 AI Viral Video Radar
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+              Let Gemini AI scout high-view podcasts and debates with high hook potential ready to clip.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <select id="niche-select" style="width: auto; padding: 8px 12px; font-size: 13px;">
+              <option value="podcast controversial debates" selected>Controversial Debates</option>
+              <option value="dating modern relationships podcast">Modern Dating / Redpill</option>
+              <option value="business entrepreneur story motivation">Business / Motivation</option>
+              <option value="true crime mystery confession podcast">True Crime / Confessions</option>
+            </select>
+            <button class="btn-submit" id="btn-scout" style="width: auto; padding: 8px 16px; font-size: 13px;" onclick="scoutViralVideos()">
+              🚀 Scout Videos
+            </button>
+          </div>
+        </div>
+
+        <div id="discovery-grid" class="discovery-grid">
+          <p style="color: var(--text-muted); grid-column: 1/-1; font-size: 13px;">
+            Click <strong>"Scout Videos"</strong> to let AI find high-performing source videos for you.
+          </p>
+        </div>
+      </div>
+
+      <!-- macOS Finder Style Library Window -->
+      <div>
+        <div class="finder-window" id="finder-window">
+          <!-- Finder Titlebar -->
+          <div class="finder-titlebar">
+            <div class="finder-traffic-lights">
+              <span class="traffic-dot close"></span>
+              <span class="traffic-dot min"></span>
+              <span class="traffic-dot max"></span>
+            </div>
+
+            <div class="finder-nav-cluster">
+              <button class="finder-nav-btn" id="finder-back-btn" onclick="navToRoot()" title="Back to Root Library" disabled>
+                ◀
+              </button>
+              <div class="finder-breadcrumbs" id="finder-breadcrumbs">
+                <span class="finder-crumb-link" onclick="navToRoot()">📁 Library</span>
+              </div>
+            </div>
+
+            <div class="finder-toolbar-actions">
+              <span class="finder-item-badge" id="finder-count-badge">0 items</span>
+            </div>
+          </div>
+
+          <!-- Finder Canvas Grid -->
+          <div class="finder-canvas">
+            <div class="finder-grid" id="finder-grid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- macOS QuickLook Modal -->
+  <div class="quicklook-overlay" id="quicklook-modal" onclick="closeQuickLook(event)">
+    <div class="quicklook-window" onclick="event.stopPropagation()">
+      <div class="quicklook-titlebar">
+        <span class="quicklook-title" id="ql-title">Preview</span>
+        <button class="quicklook-close" onclick="closeQuickLook()">✕</button>
+      </div>
+      <div class="quicklook-player-box">
+        <video id="ql-video" controls autoplay playsinline></video>
+      </div>
+      <div class="quicklook-footer">
+        <div style="font-size:12px; color:var(--text-muted);" id="ql-meta">
+          0s • 0 MB
+        </div>
+        <!-- Icon-Only Action Dock -->
+        <div class="quicklook-dock">
+          <button class="dock-icon-btn yt" id="ql-btn-yt" title="Post to YouTube Shorts">▶</button>
+          <button class="dock-icon-btn tk" id="ql-btn-tk" title="Post to TikTok">🎵</button>
+          <button class="dock-icon-btn ig" id="ql-btn-ig" title="Post to Instagram Reels">📸</button>
+          <a class="dock-icon-btn download" id="ql-btn-dl" download title="Download MP4">⬇</a>
+          <button class="dock-icon-btn delete" id="ql-btn-del" title="Delete Clip">🗑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('clipper-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const statusBox = document.getElementById('status-box');
+    const progressFill = document.getElementById('progress-fill');
+    const statusPct = document.getElementById('status-pct');
+    const statusDesc = document.getElementById('status-desc');
+    const statusTitle = document.getElementById('status-title');
+    const finderGrid = document.getElementById('finder-grid');
+    const finderBreadcrumbs = document.getElementById('finder-breadcrumbs');
+    const finderBackBtn = document.getElementById('finder-back-btn');
+    const finderCountBadge = document.getElementById('finder-count-badge');
+
+    let allProjects = [];
+    let currentFolderId = null; // null means root
+    let pollInterval = null;
+
+    // SVG icon for authentic macOS Finder folder
+    const macFolderSvg = `
+      <svg class="folder-svg" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 12C4 7.58172 7.58172 4 12 4H34C37.3137 4 40.34 5.86 41.87 8.8L44.8 14.4C45.31 15.38 46.32 16 47.43 16H88C92.4183 16 96 19.5817 96 24V68C96 72.4183 92.4183 76 88 76H12C7.58172 76 4 72.4183 4 68V12Z" fill="url(#folderGradBack)" />
+        <rect x="10" y="18" width="80" height="20" rx="3" fill="#ffffff" opacity="0.85" />
+        <path d="M4 26C4 21.5817 7.58172 18 12 18H88C92.4183 18 96 21.5817 96 26V68C96 72.4183 92.4183 76 88 76H12C7.58172 76 4 72.4183 4 68V26Z" fill="url(#folderGradFront)" />
+        <defs>
+          <linearGradient id="folderGradBack" x1="50" y1="4" x2="50" y2="76" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#38bdf8" />
+            <stop offset="1" stop-color="#0284c7" />
+          </linearGradient>
+          <linearGradient id="folderGradFront" x1="50" y1="18" x2="50" y2="76" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#67e8f9" />
+            <stop offset="0.2" stop-color="#38bdf8" />
+            <stop offset="1" stop-color="#0ea5e9" />
+          </linearGradient>
+        </defs>
+      </svg>
+    `;
+
+    // AI Viral Radar: Scout Videos
+    async function scoutViralVideos() {
+      const niche = document.getElementById('niche-select').value;
+      const scoutBtn = document.getElementById('btn-scout');
+      const discoveryGrid = document.getElementById('discovery-grid');
+
+      scoutBtn.disabled = true;
+      scoutBtn.innerText = '⚡ Scouting...';
+      discoveryGrid.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; font-size: 13px;">🤖 Gemini is scanning YouTube for high-retention debates and podcasts in this niche...</p>`;
+
+      try {
+        const res = await fetch(`/api/discover?niche=${encodeURIComponent(niche)}&count=6`);
+        const data = await res.json();
+        const vids = data.videos || [];
+
+        if (vids.length === 0) {
+          discoveryGrid.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; font-size: 13px;">No candidate videos found. Try selecting another niche.</p>`;
+          return;
+        }
+
+        discoveryGrid.innerHTML = vids.map(v => `
+          <div class="discovery-card">
+            <img src="${v.thumbnail}" class="discovery-thumb" alt="Thumbnail" />
+            <div class="discovery-info">
+              <div class="discovery-title" title="${v.title}">${v.title}</div>
+              <div class="discovery-meta">
+                👁️ ${Number(v.view_count).toLocaleString()} views • ⏱️ ${v.duration_min} min<br/>
+                📺 ${v.uploader || 'Creator'}
+              </div>
+              <button class="btn-clip-this" onclick="fillVideoInput('${v.url}')">
+                ✂️ Clip This Video
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        discoveryGrid.innerHTML = `<p style="color: #ef4444; grid-column: 1/-1; font-size: 13px;">Scouting error: ${err.message}</p>`;
+      } finally {
+        scoutBtn.disabled = false;
+        scoutBtn.innerText = '🚀 Scout Videos';
+      }
+    }
+
+    function fillVideoInput(url) {
+      const urlInput = document.getElementById('url');
+      urlInput.value = url;
+      urlInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      urlInput.focus();
+      urlInput.style.borderColor = '#facc15';
+      setTimeout(() => { urlInput.style.borderColor = ''; }, 1200);
+    }
+
+    // Fetch and render existing generations grouped by project
+    async function loadClips() {
+      try {
+        const res = await fetch('/api/projects');
+        const data = await res.json();
+        allProjects = data.projects || [];
+        renderFinder();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function navToRoot() {
+      currentFolderId = null;
+      renderFinder();
+    }
+
+    function openFolder(folderId) {
+      currentFolderId = folderId;
+      renderFinder();
+    }
+
+    function renderFinder() {
+      if (!currentFolderId) {
+        // We are at root: Show Project Folders (3-4 per row)
+        finderGrid.classList.remove('files-mode');
+        finderBackBtn.disabled = true;
+        finderBreadcrumbs.innerHTML = `<span class="finder-crumb-active">📁 Library</span>`;
+        finderCountBadge.innerText = `${allProjects.length} ${allProjects.length === 1 ? 'folder' : 'folders'}`;
+
+        if (allProjects.length === 0) {
+          finderGrid.innerHTML = `
+            <div style="text-align:center; padding: 60px 20px; grid-column: 1/-1; color: var(--text-muted);">
+              <div style="font-size: 42px; margin-bottom: 10px;">📂</div>
+              <div style="font-size: 15px; font-weight: 600; color: #f8fafc;">Library is Empty</div>
+              <p style="font-size: 12px; margin-top: 4px;">Paste a video link or scout one above to generate shorts folders.</p>
+            </div>`;
+          return;
+        }
+
+        finderGrid.innerHTML = allProjects.map(p => {
+          const totalMb = p.clips.reduce((sum, c) => sum + (c.size_mb || 0), 0).toFixed(1);
+          // Format date cleanly
+          let dateStr = "";
+          try {
+            const d = new Date(p.created_at);
+            dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+          } catch (_) {}
+
+          return `
+            <div class="finder-folder-item" onclick="openFolder('${p.id}')">
+              ${p.id !== 'root_clips' ? `
+                <button class="finder-folder-del" onclick="event.stopPropagation(); deleteProject('${p.id}')" title="Delete Folder">
+                  ✕
+                </button>` : ''}
+              <div class="finder-folder-graphic">
+                ${macFolderSvg}
+              </div>
+              <div class="finder-folder-details">
+                <div class="finder-folder-label" title="${p.name}">${p.name}</div>
+                <div class="finder-folder-meta-row">
+                  <span class="finder-folder-count-pill">${p.clips.length} ${p.clips.length === 1 ? 'Short' : 'Shorts'}</span>
+                  ${totalMb > 0 ? `<span class="finder-folder-size">• ${totalMb} MB</span>` : ''}
+                  ${dateStr ? `<span class="finder-folder-size">• ${dateStr}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } else {
+        // Inside a specific folder: Show Video File Items
+        finderGrid.classList.add('files-mode');
+        const currentProject = allProjects.find(p => p.id === currentFolderId);
+        if (!currentProject) {
+          navToRoot();
+          return;
+        }
+
+        finderBackBtn.disabled = false;
+        finderBreadcrumbs.innerHTML = `
+          <span class="finder-crumb-link" onclick="navToRoot()">📁 Library</span>
+          <span style="color: var(--text-muted); opacity: 0.6;">/</span>
+          <span class="finder-crumb-active" title="${currentProject.name}">${currentProject.name}</span>
+        `;
+        finderCountBadge.innerText = `${currentProject.clips.length} ${currentProject.clips.length === 1 ? 'clip' : 'clips'}`;
+
+        if (currentProject.clips.length === 0) {
+          finderGrid.innerHTML = `
+            <div style="text-align:center; padding: 60px 20px; grid-column: 1/-1; color: var(--text-muted);">
+              <div style="font-size: 36px; margin-bottom: 8px;">🎬</div>
+              <div style="font-size: 14px; font-weight: 600; color: #f8fafc;">No clips in this folder</div>
+            </div>`;
+          return;
+        }
+
+        finderGrid.innerHTML = currentProject.clips.map((c, i) => {
+          const durationStr = c.duration ? `${Math.round(c.duration)}s` : '';
+          const thumbHtml = c.thumb_url 
+            ? `<img src="${c.thumb_url}" class="finder-thumb-img" alt="poster" loading="lazy" />` 
+            : `<div class="finder-thumb-placeholder">🎬</div>`;
+
+          return `
+            <div class="finder-file-item" onclick="openQuickLook(${JSON.stringify(c).replace(/"/g, '&quot;')})">
+              <div class="finder-thumb-wrap">
+                ${thumbHtml}
+                <div class="finder-thumb-play-overlay">
+                  <div class="play-bubble">▶</div>
+                </div>
+                ${durationStr ? `<span class="finder-duration-tag">${durationStr}</span>` : ''}
+              </div>
+              <div class="finder-file-label" title="${c.title || c.filename}">
+                ${c.title || c.filename.replace('.mp4', '').replace(/_/g, ' ')}
+              </div>
+              <div class="finder-file-meta">
+                <span>${c.size_mb ? `${c.size_mb} MB` : 'MP4'}</span>
+                ${c.score ? `<span style="color:#facc15; font-weight:700;">★ ${c.score}</span>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // QuickLook Modal Logic
+    const qlModal = document.getElementById('quicklook-modal');
+    const qlVideo = document.getElementById('ql-video');
+    const qlTitle = document.getElementById('ql-title');
+    const qlMeta = document.getElementById('ql-meta');
+    const qlBtnYt = document.getElementById('ql-btn-yt');
+    const qlBtnTk = document.getElementById('ql-btn-tk');
+    const qlBtnIg = document.getElementById('ql-btn-ig');
+    const qlBtnDl = document.getElementById('ql-btn-dl');
+    const qlBtnDel = document.getElementById('ql-btn-del');
+
+    function openQuickLook(clip) {
+      qlTitle.innerText = clip.title || clip.filename;
+      qlMeta.innerText = `${clip.duration ? `${Math.round(clip.duration)}s` : ''} • ${clip.size_mb || 0} MB • 9:16 Vertical`;
+      qlVideo.src = clip.url;
+      qlVideo.play().catch(() => {});
+
+      qlBtnDl.href = clip.url;
+
+      qlBtnYt.onclick = () => postToSocial(clip.rel_path, clip.title || clip.filename, 'youtube');
+      qlBtnTk.onclick = () => postToSocial(clip.rel_path, clip.title || clip.filename, 'tiktok');
+      qlBtnIg.onclick = () => postToSocial(clip.rel_path, clip.title || clip.filename, 'instagram');
+      qlBtnDel.onclick = () => {
+        closeQuickLook();
+        deleteClip(clip.rel_path);
+      };
+
+      qlModal.style.display = 'flex';
+    }
+
+    function closeQuickLook(e) {
+      qlVideo.pause();
+      qlVideo.src = '';
+      qlModal.style.display = 'none';
+    }
+
+    // Close QuickLook on Spacebar or Escape
+    window.addEventListener('keydown', (e) => {
+      if (qlModal.style.display === 'flex') {
+        if (e.key === 'Escape' || e.key === ' ') {
+          e.preventDefault();
+          closeQuickLook();
+        }
+      }
+    });
+
+    async function deleteClip(relPath) {
+      if (!confirm(`Are you sure you want to delete this clip?`)) return;
+      try {
+        const res = await fetch(`/api/clip?rel_path=${encodeURIComponent(relPath)}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          loadClips();
+        } else {
+          const err = await res.json();
+          alert('Delete failed: ' + (err.detail || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    async function deleteProject(projectId) {
+      if (!confirm(`Are you sure you want to delete this entire project folder and all its clips?`)) return;
+      try {
+        const res = await fetch(`/api/project?project_id=${encodeURIComponent(projectId)}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          if (currentFolderId === projectId) {
+            currentFolderId = null;
+          }
+          loadClips();
+        } else {
+          const err = await res.json();
+          alert('Delete project failed: ' + (err.detail || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    async function postToSocial(relPath, title, platform) {
+      const confirmPost = confirm(`Publish "${title}" directly to ${platform.toUpperCase()}?`);
+      if (!confirmPost) return;
+
+      try {
+        const res = await fetch('/api/post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rel_path: relPath,
+            title: title.replace(/_/g, ' '),
+            description: title.replace(/_/g, ' '),
+            platform: platform
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(`Failed to post to ${platform}: ` + (data.detail || JSON.stringify(data)));
+        } else {
+          alert(`Successfully uploaded to ${platform}! ` + (data.url || ''));
+        }
+      } catch (err) {
+        alert(`Error connecting to server: ` + err.message);
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = document.getElementById('url').value.trim();
+      const targetDuration = document.getElementById('target-duration').value;
+      const numClips = parseInt(document.getElementById('num-clips').value);
+      const modelSize = document.getElementById('model-size').value;
+      const burnCaptions = document.getElementById('burn-captions').checked;
+      const crop916 = document.getElementById('crop-9-16').checked;
+      const smartFaceTracking = document.getElementById('smart-face-tracking').checked;
+      const addMusic = document.getElementById('add-music').checked;
+      const addWhoosh = document.getElementById('add-whoosh').checked;
+      const addBanner = document.getElementById('add-banner').checked;
+      const cookiesBrowser = document.getElementById('cookies-browser').value || null;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>⏳ Processing Pipeline...</span>`;
+      statusBox.style.display = 'block';
+
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url,
+            num_clips: numClips,
+            model_size: modelSize,
+            target_duration: targetDuration,
+            burn_captions: burnCaptions,
+            crop_9_16: crop916,
+            smart_face_tracking: smartFaceTracking,
+            add_music: addMusic,
+            add_whoosh: addWhoosh,
+            add_banner: addBanner,
+            cookies_browser: cookiesBrowser
+          })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          alert(err.detail || 'Failed to start generation');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>✨ Generate Viral Shorts</span>`;
+          return;
+        }
+
+        // Poll status
+        if (pollInterval) clearInterval(pollInterval);
+        pollInterval = setInterval(checkStatus, 2000);
+
+      } catch (err) {
+        alert('Connection error: ' + err.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>✨ Generate Viral Shorts</span>`;
+      }
+    });
+
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const state = await res.json();
+
+        progressFill.style.width = state.progress + '%';
+        statusPct.innerText = state.progress + '%';
+        statusDesc.innerText = state.step_message || 'Working...';
+        statusTitle.innerText = state.status.toUpperCase();
+
+        if (state.status === 'done') {
+          clearInterval(pollInterval);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>✨ Generate Viral Shorts</span>`;
+          statusTitle.innerText = 'COMPLETED 🎉';
+          loadClips();
+        } else if (state.status === 'error') {
+          clearInterval(pollInterval);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>✨ Generate Viral Shorts</span>`;
+          statusTitle.innerText = 'ERROR ❌';
+          alert('Error: ' + (state.error || state.step_message));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    loadClips();
+  </script>
+</body>
+</html>
