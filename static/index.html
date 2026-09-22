@@ -1309,7 +1309,8 @@
               </div>
             </div>
             <div class="platform-actions">
-              <button class="btn-connect-action primary" id="yt-btn-connect" onclick="toggleYtSetup()">Connect</button>
+              <button class="btn-connect-action primary" id="yt-btn-browser-login" onclick="loginWithBrowser('youtube')" title="Zero setup: login directly with Chrome">🌐 Login with Browser</button>
+              <button class="btn-connect-action" id="yt-btn-connect" onclick="toggleYtSetup()" title="Developer API Option">OAuth Key</button>
               <button class="btn-connect-action danger" id="yt-btn-disconnect" onclick="disconnectYt()" style="display:none;">Disconnect</button>
             </div>
           </div>
@@ -1337,7 +1338,8 @@
               </div>
             </div>
             <div class="platform-actions">
-              <button class="btn-connect-action primary" id="ig-btn-connect" onclick="toggleIgSetup()">Connect</button>
+              <button class="btn-connect-action primary" id="ig-btn-browser-login" onclick="loginWithBrowser('instagram')" title="Zero setup: login directly with Chrome">🌐 Login with Browser</button>
+              <button class="btn-connect-action" id="ig-btn-connect" onclick="toggleIgSetup()" title="Developer API Option">Token</button>
               <button class="btn-connect-action danger" id="ig-btn-disconnect" onclick="disconnectIg()" style="display:none;">Disconnect</button>
             </div>
           </div>
@@ -1752,11 +1754,47 @@
       tiktok: { connected: false }
     };
 
+    
+    async function loginWithBrowser(platform) {
+      alert(`Opening Google Chrome to sign into ${platform.toUpperCase()}... Please sign in, and your session will be saved automatically.`);
+      try {
+        const res = await fetch(`/api/accounts/browser/login/${platform}`, { method: 'POST' });
+        if (res.ok) {
+          // Poll accounts status
+          let checkCount = 0;
+          const checker = setInterval(async () => {
+            await loadSocialAccounts();
+            checkCount++;
+            if (checkCount > 30 || (platform === 'youtube' && socialState.youtube.connected) || (platform === 'instagram' && socialState.instagram.connected)) {
+              clearInterval(checker);
+            }
+          }, 4000);
+        }
+      } catch (err) {
+        alert('Failed to launch browser: ' + err.message);
+      }
+    }
+
     async function loadSocialAccounts() {
       try {
         const res = await fetch('/api/accounts/status');
-        if (!res.ok) return;
-        socialState = await res.json();
+        if (res.ok) socialState = await res.json();
+        
+        // Also check browser session status
+        try {
+          const bRes = await fetch('/api/accounts/browser/status');
+          if (bRes.ok) {
+            const bData = await bRes.json();
+            if (bData.youtube && bData.youtube.connected) {
+              socialState.youtube.connected = true;
+              socialState.youtube.channel_title = bData.youtube.account_name || 'YouTube Studio (Chrome)';
+            }
+            if (bData.instagram && bData.instagram.connected) {
+              socialState.instagram.connected = true;
+              socialState.instagram.username = bData.instagram.account_name || 'Instagram (Chrome)';
+            }
+          }
+        } catch (e) {}
         renderAccountsUI();
       } catch (err) {
         console.error('Error fetching social status:', err);
@@ -2103,11 +2141,47 @@
       tiktok: { connected: false }
     };
 
+    
+    async function loginWithBrowser(platform) {
+      alert(`Opening Google Chrome to sign into ${platform.toUpperCase()}... Please sign in, and your session will be saved automatically.`);
+      try {
+        const res = await fetch(`/api/accounts/browser/login/${platform}`, { method: 'POST' });
+        if (res.ok) {
+          // Poll accounts status
+          let checkCount = 0;
+          const checker = setInterval(async () => {
+            await loadSocialAccounts();
+            checkCount++;
+            if (checkCount > 30 || (platform === 'youtube' && socialState.youtube.connected) || (platform === 'instagram' && socialState.instagram.connected)) {
+              clearInterval(checker);
+            }
+          }, 4000);
+        }
+      } catch (err) {
+        alert('Failed to launch browser: ' + err.message);
+      }
+    }
+
     async function loadSocialAccounts() {
       try {
         const res = await fetch('/api/accounts/status');
-        if (!res.ok) return;
-        socialState = await res.json();
+        if (res.ok) socialState = await res.json();
+        
+        // Also check browser session status
+        try {
+          const bRes = await fetch('/api/accounts/browser/status');
+          if (bRes.ok) {
+            const bData = await bRes.json();
+            if (bData.youtube && bData.youtube.connected) {
+              socialState.youtube.connected = true;
+              socialState.youtube.channel_title = bData.youtube.account_name || 'YouTube Studio (Chrome)';
+            }
+            if (bData.instagram && bData.instagram.connected) {
+              socialState.instagram.connected = true;
+              socialState.instagram.username = bData.instagram.account_name || 'Instagram (Chrome)';
+            }
+          }
+        } catch (e) {}
         renderAccountsUI();
       } catch (err) {
         console.error('Error fetching social status:', err);
@@ -2541,11 +2615,47 @@
       tiktok: { connected: false }
     };
 
+    
+    async function loginWithBrowser(platform) {
+      alert(`Opening Google Chrome to sign into ${platform.toUpperCase()}... Please sign in, and your session will be saved automatically.`);
+      try {
+        const res = await fetch(`/api/accounts/browser/login/${platform}`, { method: 'POST' });
+        if (res.ok) {
+          // Poll accounts status
+          let checkCount = 0;
+          const checker = setInterval(async () => {
+            await loadSocialAccounts();
+            checkCount++;
+            if (checkCount > 30 || (platform === 'youtube' && socialState.youtube.connected) || (platform === 'instagram' && socialState.instagram.connected)) {
+              clearInterval(checker);
+            }
+          }, 4000);
+        }
+      } catch (err) {
+        alert('Failed to launch browser: ' + err.message);
+      }
+    }
+
     async function loadSocialAccounts() {
       try {
         const res = await fetch('/api/accounts/status');
-        if (!res.ok) return;
-        socialState = await res.json();
+        if (res.ok) socialState = await res.json();
+        
+        // Also check browser session status
+        try {
+          const bRes = await fetch('/api/accounts/browser/status');
+          if (bRes.ok) {
+            const bData = await bRes.json();
+            if (bData.youtube && bData.youtube.connected) {
+              socialState.youtube.connected = true;
+              socialState.youtube.channel_title = bData.youtube.account_name || 'YouTube Studio (Chrome)';
+            }
+            if (bData.instagram && bData.instagram.connected) {
+              socialState.instagram.connected = true;
+              socialState.instagram.username = bData.instagram.account_name || 'Instagram (Chrome)';
+            }
+          }
+        } catch (e) {}
         renderAccountsUI();
       } catch (err) {
         console.error('Error fetching social status:', err);
@@ -2885,11 +2995,47 @@
       tiktok: { connected: false }
     };
 
+    
+    async function loginWithBrowser(platform) {
+      alert(`Opening Google Chrome to sign into ${platform.toUpperCase()}... Please sign in, and your session will be saved automatically.`);
+      try {
+        const res = await fetch(`/api/accounts/browser/login/${platform}`, { method: 'POST' });
+        if (res.ok) {
+          // Poll accounts status
+          let checkCount = 0;
+          const checker = setInterval(async () => {
+            await loadSocialAccounts();
+            checkCount++;
+            if (checkCount > 30 || (platform === 'youtube' && socialState.youtube.connected) || (platform === 'instagram' && socialState.instagram.connected)) {
+              clearInterval(checker);
+            }
+          }, 4000);
+        }
+      } catch (err) {
+        alert('Failed to launch browser: ' + err.message);
+      }
+    }
+
     async function loadSocialAccounts() {
       try {
         const res = await fetch('/api/accounts/status');
-        if (!res.ok) return;
-        socialState = await res.json();
+        if (res.ok) socialState = await res.json();
+        
+        // Also check browser session status
+        try {
+          const bRes = await fetch('/api/accounts/browser/status');
+          if (bRes.ok) {
+            const bData = await bRes.json();
+            if (bData.youtube && bData.youtube.connected) {
+              socialState.youtube.connected = true;
+              socialState.youtube.channel_title = bData.youtube.account_name || 'YouTube Studio (Chrome)';
+            }
+            if (bData.instagram && bData.instagram.connected) {
+              socialState.instagram.connected = true;
+              socialState.instagram.username = bData.instagram.account_name || 'Instagram (Chrome)';
+            }
+          }
+        } catch (e) {}
         renderAccountsUI();
       } catch (err) {
         console.error('Error fetching social status:', err);

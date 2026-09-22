@@ -366,6 +366,24 @@ class SaveInstagramRequest(BaseModel):
 class SaveTikTokRequest(BaseModel):
     access_token: str
 
+
+@app.get("/api/accounts/browser/status")
+def get_browser_status():
+    from browser_publisher import get_browser_accounts_status
+    return JSONResponse(get_browser_accounts_status())
+
+@app.post("/api/accounts/browser/login/{platform}")
+def start_browser_login(platform: str, background_tasks: BackgroundTasks):
+    from browser_publisher import launch_login_browser
+    background_tasks.add_task(launch_login_browser, platform)
+    return JSONResponse({"status": "launched", "message": f"Opened Google Chrome for {platform} login."})
+
+@app.delete("/api/accounts/browser/disconnect/{platform}")
+def disconnect_browser_session(platform: str):
+    from browser_publisher import disconnect_browser_account
+    disconnect_browser_account(platform)
+    return JSONResponse({"status": "disconnected"})
+
 @app.get("/api/accounts/status")
 def get_accounts_status():
     from social_publisher import get_social_accounts_status
@@ -473,6 +491,17 @@ def post_clip(req: PostRequest):
         from social_publisher import upload_youtube_short, upload_tiktok_video, upload_instagram_reel
 
         if req.platform.lower() == "youtube":
+            # Check if browser session exists first
+            from pathlib import Path
+            if (Path(".sessions/youtube_state.json")).exists() and not (Path("client_secret.json")).exists():
+                from browser_publisher import upload_youtube_browser
+                res = upload_youtube_browser(
+                    video_path=str(clip_path),
+                    title=req.title,
+                    description=req.description or req.title
+                )
+                return JSONResponse(res)
+
             res = upload_youtube_short(
                 video_path=str(clip_path),
                 title=req.title,
