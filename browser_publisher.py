@@ -226,11 +226,11 @@ def upload_youtube_browser(video_path: str, title: str, description: str = "") -
             upload_item.click()
             time.sleep(2)
 
-        # 3. File Input
-        file_input = page.wait_for_selector("input[type='file']", timeout=20000)
+        # 3. File Input (input[type='file'] is hidden by YouTube UI, so we must wait with state='attached')
+        file_input = page.wait_for_selector("input[type='file']", state="attached", timeout=30000)
         file_input.set_input_files(str(video_path))
-        print("[Browser] Video file selected...")
-        time.sleep(7)
+        print("[Browser] Video file selected into file input...")
+        time.sleep(8)
 
         # 4. Set Title
         short_title = title if "#Shorts" in title else f"{title} #Shorts"
