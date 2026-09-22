@@ -51,6 +51,11 @@ server.log
 .vscode/
 .idea/
 .sessions/
-openshorts_repo/
+openshorts_repo/dashboard/node_modules/
+openshorts_repo/dashboard/dist/
+openshorts_repo/output/
+openshorts_repo/uploads/
+openshorts_repo/.env
+openshorts_repo/__pycache__/
 remotion/node_modules/
 remotion/.remotion/
