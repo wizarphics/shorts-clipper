@@ -12,6 +12,67 @@ import requests
 from pathlib import Path
 from typing import Optional, Dict, Any
 
+SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly"
+]
+
+def get_social_accounts_status() -> Dict[str, Any]:
+    """
+    Returns connection status and profile details for YouTube, Instagram, and TikTok.
+    """
+    status = {
+        "youtube": {"connected": False, "channel_title": None, "has_client_secret": False},
+        "instagram": {"connected": False, "account_id": None, "username": None},
+        "tiktok": {"connected": False}
+    }
+
+    # YouTube Status
+    client_secret_path = Path("client_secret.json")
+    status["youtube"]["has_client_secret"] = client_secret_path.exists()
+    token_path = Path("youtube_token.json")
+
+    if token_path.exists():
+        try:
+            from google.oauth2.credentials import Credentials
+            from googleapiclient.discovery import build
+            creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)
+            if creds and creds.valid:
+                status["youtube"]["connected"] = True
+                try:
+                    yt = build("youtube", "v3", credentials=creds)
+                    ch_res = yt.channels().list(part="snippet", mine=True).execute()
+                    items = ch_res.get("items", [])
+                    if items:
+                        status["youtube"]["channel_title"] = items[0]["snippet"].get("title")
+                    else:
+                        status["youtube"]["channel_title"] = "Authorized Channel"
+                except Exception:
+                    status["youtube"]["channel_title"] = "Authorized Channel"
+        except Exception:
+            status["youtube"]["connected"] = False
+
+    # Instagram Status
+    ig_id = os.getenv("INSTAGRAM_ACCOUNT_ID")
+    ig_token = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+    if ig_id and ig_token:
+        status["instagram"]["connected"] = True
+        status["instagram"]["account_id"] = ig_id
+        try:
+            r = requests.get(f"https://graph.facebook.com/v19.0/{ig_id}?fields=username,name&access_token={ig_token}", timeout=4)
+            if r.ok:
+                data = r.json()
+                status["instagram"]["username"] = data.get("username") or data.get("name") or ig_id
+        except Exception:
+            status["instagram"]["username"] = ig_id
+
+    # TikTok Status
+    tt_token = os.getenv("TIKTOK_ACCESS_TOKEN")
+    if tt_token:
+        status["tiktok"]["connected"] = True
+
+    return status
+
 # ==========================================
 # 1. YOUTUBE SHORTS UPLOADER
 # ==========================================
@@ -21,9 +82,7 @@ def get_youtube_service():
     from google_auth_oauthlib.flow import InstalledAppFlow
     from google.oauth2.credentials import Credentials
 
-    SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
     creds = None
-
     token_path = Path("youtube_token.json")
     client_secret_path = Path("client_secret.json")
 
@@ -36,7 +95,7 @@ def get_youtube_service():
     if not creds or not creds.valid:
         if not client_secret_path.exists():
             raise FileNotFoundError(
-                "Missing 'client_secret.json'. Download OAuth credentials from Google Cloud Console."
+                "Missing 'client_secret.json'. Please save OAuth credentials in Connected Accounts."
             )
         flow = InstalledAppFlow.from_client_secrets_file(str(client_secret_path), SCOPES)
         creds = flow.run_local_server(port=8080)
@@ -51,16 +110,15 @@ def upload_youtube_short(video_path: str, title: str, description: str = "", tag
 
     youtube = get_youtube_service()
 
-    # Append #Shorts to title and description for automatic algorithm classification
     short_title = title if "#Shorts" in title else f"{title} #Shorts"
-    short_desc = description + "\n\n#Shorts #Viral #Trending"
+    short_desc = (description or "") + "\n\n#Shorts #Viral #Trending"
 
     body = {
         "snippet": {
             "title": short_title[:100],
             "description": short_desc,
             "tags": (tags or []) + ["Shorts", "Viral", "Reels"],
-            "categoryId": "22"  # People & Blogs
+            "categoryId": "22"
         },
         "status": {
             "privacyStatus": privacy,
@@ -83,22 +141,16 @@ def upload_youtube_short(video_path: str, title: str, description: str = "", tag
         "status": "success"
     }
 
-
 # ==========================================
 # 2. TIKTOK CONTENT POSTING API
 # ==========================================
 def upload_tiktok_video(video_path: str, title: str, access_token: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Publishes video to TikTok using the official Content Posting API v2.
-    https://developers.tiktok.com/doc/content-posting-api-reference-direct-post
-    """
     token = access_token or os.getenv("TIKTOK_ACCESS_TOKEN")
     if not token:
-        raise ValueError("Missing TIKTOK_ACCESS_TOKEN in environment or .env")
+        raise ValueError("Missing TIKTOK_ACCESS_TOKEN in environment or Connected Accounts")
 
     video_size = os.path.getsize(video_path)
 
-    # 1. Initialize upload
     init_url = "https://open.tiktokapis.com/v2/post/publish/video/init/"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -127,7 +179,6 @@ def upload_tiktok_video(video_path: str, title: str, access_token: Optional[str]
     upload_url = init_res["data"]["upload_url"]
     publish_id = init_res["data"]["publish_id"]
 
-    # 2. Upload video binary
     with open(video_path, "rb") as f:
         video_data = f.read()
 
@@ -145,22 +196,16 @@ def upload_tiktok_video(video_path: str, title: str, access_token: Optional[str]
         "status": "success"
     }
 
-
 # ==========================================
 # 3. INSTAGRAM REELS (META GRAPH API)
 # ==========================================
 def upload_instagram_reel(video_url: str, caption: str, account_id: Optional[str] = None, access_token: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Publishes Reels using Meta Graph API.
-    Note: Instagram requires a public video URL to ingest the media.
-    """
     ig_account_id = account_id or os.getenv("INSTAGRAM_ACCOUNT_ID")
     token = access_token or os.getenv("INSTAGRAM_ACCESS_TOKEN")
 
     if not ig_account_id or not token:
-        raise ValueError("Missing INSTAGRAM_ACCOUNT_ID or INSTAGRAM_ACCESS_TOKEN in environment or .env")
+        raise ValueError("Missing INSTAGRAM_ACCOUNT_ID or INSTAGRAM_ACCESS_TOKEN. Please configure in Connected Accounts.")
 
-    # 1. Create Media Container
     container_url = f"https://graph.facebook.com/v19.0/{ig_account_id}/media"
     payload = {
         "media_type": "REELS",
@@ -174,7 +219,6 @@ def upload_instagram_reel(video_url: str, caption: str, account_id: Optional[str
 
     creation_id = c_res["id"]
 
-    # 2. Publish Container
     publish_url = f"https://graph.facebook.com/v19.0/{ig_account_id}/media_publish"
     pub_payload = {
         "creation_id": creation_id,

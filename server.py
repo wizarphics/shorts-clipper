@@ -352,6 +352,111 @@ def start_generation(req: ClipRequest, background_tasks: BackgroundTasks):
     background_tasks.add_task(process_pipeline, req)
     return JSONResponse({"status": "started"})
 
+
+# ==========================================
+# CONNECTED ACCOUNTS & SOCIAL HUB
+# ==========================================
+class SaveClientSecretRequest(BaseModel):
+    client_secret_json: str
+
+class SaveInstagramRequest(BaseModel):
+    account_id: str
+    access_token: str
+
+class SaveTikTokRequest(BaseModel):
+    access_token: str
+
+@app.get("/api/accounts/status")
+def get_accounts_status():
+    from social_publisher import get_social_accounts_status
+    return JSONResponse(get_social_accounts_status())
+
+@app.post("/api/accounts/youtube/save-secret")
+def save_youtube_secret(req: SaveClientSecretRequest):
+    try:
+        parsed = json.loads(req.client_secret_json)
+        # Check standard OAuth client secret keys
+        if "installed" not in parsed and "web" not in parsed:
+            raise ValueError("Invalid client_secret.json format: Must contain 'installed' or 'web' root key.")
+        with open("client_secret.json", "w") as f:
+            json.dump(parsed, f, indent=2)
+        return JSONResponse({"status": "saved", "message": "client_secret.json saved successfully."})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/api/accounts/youtube/auth-start")
+def start_youtube_auth(background_tasks: BackgroundTasks):
+    client_secret_path = Path("client_secret.json")
+    if not client_secret_path.exists():
+        raise HTTPException(status_code=400, detail="Missing client_secret.json. Please paste your OAuth JSON first.")
+    
+    def run_flow():
+        try:
+            from social_publisher import get_youtube_service
+            get_youtube_service()
+        except Exception as e:
+            print(f"Auth error: {e}")
+
+    background_tasks.add_task(run_flow)
+    return JSONResponse({"status": "started", "message": "OAuth browser prompt triggered on local machine."})
+
+@app.delete("/api/accounts/youtube/disconnect")
+def disconnect_youtube():
+    token_path = Path("youtube_token.json")
+    if token_path.exists():
+        os.remove(token_path)
+    return JSONResponse({"status": "disconnected"})
+
+def update_env_variable(key: str, value: str):
+    env_path = BASE_DIR / ".env"
+    lines = []
+    if env_path.exists():
+        with open(env_path, "r") as f:
+            lines = f.readlines()
+    
+    key_found = False
+    new_lines = []
+    for line in lines:
+        if line.strip().startswith(f"{key}="):
+            new_lines.append(f"{key}={value}\n")
+            key_found = True
+        else:
+            new_lines.append(line)
+    if not key_found:
+        new_lines.append(f"{key}={value}\n")
+    
+    with open(env_path, "w") as f:
+        f.writelines(new_lines)
+    os.environ[key] = value
+
+@app.post("/api/accounts/instagram/save")
+def save_instagram_credentials(req: SaveInstagramRequest):
+    try:
+        update_env_variable("INSTAGRAM_ACCOUNT_ID", req.account_id.strip())
+        update_env_variable("INSTAGRAM_ACCESS_TOKEN", req.access_token.strip())
+        return JSONResponse({"status": "saved", "message": "Instagram credentials saved."})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/accounts/instagram/disconnect")
+def disconnect_instagram():
+    update_env_variable("INSTAGRAM_ACCOUNT_ID", "")
+    update_env_variable("INSTAGRAM_ACCESS_TOKEN", "")
+    return JSONResponse({"status": "disconnected"})
+
+@app.post("/api/accounts/tiktok/save")
+def save_tiktok_credentials(req: SaveTikTokRequest):
+    try:
+        update_env_variable("TIKTOK_ACCESS_TOKEN", req.access_token.strip())
+        return JSONResponse({"status": "saved", "message": "TikTok token saved."})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/accounts/tiktok/disconnect")
+def disconnect_tiktok():
+    update_env_variable("TIKTOK_ACCESS_TOKEN", "")
+    return JSONResponse({"status": "disconnected"})
+
 class PostRequest(BaseModel):
     rel_path: str
     title: str

@@ -810,10 +810,306 @@
     .dock-icon-btn.ig:hover { background: #ec4899; border-color: #ec4899; }
     .dock-icon-btn.download:hover { background: #6366f1; border-color: #6366f1; }
     .dock-icon-btn.delete:hover { background: #dc2626; border-color: #dc2626; }
+  
+    /* Top Bar & Connected Accounts Button */
+    .top-nav-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .accounts-hub-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #f8fafc;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+    }
+
+    .accounts-hub-btn:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+    .status-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Modal Framework */
+    .app-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+
+    .app-modal-box {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 580px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.96); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .app-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .app-modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-modal-close {
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .app-modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .app-modal-body {
+      padding: 24px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    /* Platform Connection Cards */
+    .platform-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .platform-card:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .platform-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .platform-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .platform-icon-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .platform-icon-circle.yt { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .platform-icon-circle.ig { background: rgba(236, 72, 153, 0.15); color: #ec4899; border: 1px solid rgba(236, 72, 153, 0.3); }
+    .platform-icon-circle.tk { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+    .platform-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .platform-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .platform-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-connect-action {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      transition: all 0.15s ease;
+    }
+
+    .btn-connect-action.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-connect-action.primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-connect-action.danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .btn-connect-action.danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .platform-expand {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: none;
+    }
+
+    .platform-expand textarea, .platform-expand input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #f8fafc;
+      font-size: 12px;
+      font-family: monospace;
+      margin-bottom: 10px;
+      resize: vertical;
+    }
+
+    /* Publish Dialog Inputs */
+    .publish-preview-split {
+      display: flex;
+      gap: 20px;
+    }
+
+    .publish-thumb-side {
+      width: 140px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .publish-thumb-side video {
+      width: 140px;
+      height: 248px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .publish-form-side {
+      flex-grow: 1;
+    }
+
+    .target-network-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .network-check-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .network-check-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .network-check-card.active {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: var(--primary);
+    }
+
+    .network-check-card input {
+      display: none;
+    }
+
   </style>
 </head>
 <body>
   <div class="container">
+    
+    <!-- Opus / Klap Style Top Nav Bar -->
+    <div class="top-nav-bar">
+      <button class="accounts-hub-btn" onclick="openAccountsModal()">
+        <span class="status-dot" id="global-accounts-dot"></span>
+        <span>Connected Accounts</span>
+        <span style="opacity: 0.5; font-size: 10px;">⚙️</span>
+      </button>
+    </div>
+
     <header>
       <div class="badge">⚡ Powered by Gemini AI & Whisper</div>
       <h1>AI Shorts Clipper</h1>
@@ -987,6 +1283,166 @@
     </div>
   </div>
 
+  
+  <!-- Connected Accounts Hub Modal (Opus / Klap Style) -->
+  <div class="app-modal-overlay" id="accounts-modal" onclick="closeAccountsModal(event)">
+    <div class="app-modal-box" onclick="event.stopPropagation()">
+      <div class="app-modal-header">
+        <div class="app-modal-title">
+          <span>⚡ Connected Social Accounts</span>
+        </div>
+        <button class="app-modal-close" onclick="closeAccountsModal()">✕</button>
+      </div>
+      <div class="app-modal-body">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+          Link your YouTube and Instagram accounts for instant 1-click publishing directly from the shorts studio.
+        </p>
+
+        <!-- YouTube Card -->
+        <div class="platform-card" id="yt-account-card">
+          <div class="platform-header">
+            <div class="platform-meta">
+              <div class="platform-icon-circle yt">▶</div>
+              <div>
+                <div class="platform-name">YouTube Shorts</div>
+                <div class="platform-sub" id="yt-account-sub">Not connected</div>
+              </div>
+            </div>
+            <div class="platform-actions">
+              <button class="btn-connect-action primary" id="yt-btn-connect" onclick="toggleYtSetup()">Connect</button>
+              <button class="btn-connect-action danger" id="yt-btn-disconnect" onclick="disconnectYt()" style="display:none;">Disconnect</button>
+            </div>
+          </div>
+          <!-- Expandable setup for client_secret.json -->
+          <div class="platform-expand" id="yt-expand-box">
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+              Paste your Google OAuth <strong>client_secret.json</strong> content here, or place it in the project root:
+            </div>
+            <textarea id="yt-secret-input" rows="4" placeholder='{ "installed": { "client_id": "...", "client_secret": "..." } }'></textarea>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-connect-action primary" onclick="saveYtSecretAndAuth()">Save & Authorize</button>
+              <button class="btn-connect-action" onclick="toggleYtSetup()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instagram Card -->
+        <div class="platform-card" id="ig-account-card">
+          <div class="platform-header">
+            <div class="platform-meta">
+              <div class="platform-icon-circle ig">📸</div>
+              <div>
+                <div class="platform-name">Instagram Reels</div>
+                <div class="platform-sub" id="ig-account-sub">Not connected</div>
+              </div>
+            </div>
+            <div class="platform-actions">
+              <button class="btn-connect-action primary" id="ig-btn-connect" onclick="toggleIgSetup()">Connect</button>
+              <button class="btn-connect-action danger" id="ig-btn-disconnect" onclick="disconnectIg()" style="display:none;">Disconnect</button>
+            </div>
+          </div>
+          <!-- Expandable setup for Instagram Meta Tokens -->
+          <div class="platform-expand" id="ig-expand-box">
+            <label style="font-size: 11px; margin-bottom: 4px; display:block;">Instagram Account ID:</label>
+            <input type="text" id="ig-account-id-input" placeholder="e.g. 17841405309211844" />
+            <label style="font-size: 11px; margin-bottom: 4px; display:block;">Meta Graph API Access Token:</label>
+            <textarea id="ig-token-input" rows="3" placeholder="EAAG..."></textarea>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-connect-action primary" onclick="saveIgCredentials()">Save Credentials</button>
+              <button class="btn-connect-action" onclick="toggleIgSetup()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TikTok Card -->
+        <div class="platform-card" id="tk-account-card">
+          <div class="platform-header">
+            <div class="platform-meta">
+              <div class="platform-icon-circle tk">🎵</div>
+              <div>
+                <div class="platform-name">TikTok</div>
+                <div class="platform-sub" id="tk-account-sub">Not connected</div>
+              </div>
+            </div>
+            <div class="platform-actions">
+              <button class="btn-connect-action primary" id="tk-btn-connect" onclick="toggleTkSetup()">Connect</button>
+              <button class="btn-connect-action danger" id="tk-btn-disconnect" onclick="disconnectTk()" style="display:none;">Disconnect</button>
+            </div>
+          </div>
+          <div class="platform-expand" id="tk-expand-box">
+            <label style="font-size: 11px; margin-bottom: 4px; display:block;">TikTok Access Token:</label>
+            <input type="text" id="tk-token-input" placeholder="act.example_token..." />
+            <div style="display:flex; gap:8px;">
+              <button class="btn-connect-action primary" onclick="saveTkCredentials()">Save Token</button>
+              <button class="btn-connect-action" onclick="toggleTkSetup()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 1-Click Publish Modal (Opus Clip / Klap Style) -->
+  <div class="app-modal-overlay" id="publish-modal" onclick="closePublishModal(event)">
+    <div class="app-modal-box" style="max-width: 680px;" onclick="event.stopPropagation()">
+      <div class="app-modal-header">
+        <div class="app-modal-title">
+          <span>🚀 Publish Short</span>
+        </div>
+        <button class="app-modal-close" onclick="closePublishModal()">✕</button>
+      </div>
+      <div class="app-modal-body">
+        <div class="publish-preview-split">
+          <!-- Video Preview -->
+          <div class="publish-thumb-side">
+            <video id="pub-video-preview" autoplay loop muted playsinline></video>
+            <span id="pub-clip-meta" style="font-size: 11px; color: var(--text-muted); margin-top: 8px;"></span>
+          </div>
+
+          <!-- Metadata & Channel Targets -->
+          <div class="publish-form-side">
+            <label style="font-size: 12px; margin-bottom: 6px; display:block;">Select Destinations:</label>
+            <div class="target-network-selector">
+              <div class="network-check-card active" id="net-yt-card" onclick="toggleNetworkChoice('yt')">
+                <input type="checkbox" id="pub-dest-yt" checked />
+                <span style="font-size: 16px;">▶</span>
+                <div style="line-height: 1.2;">
+                  <div style="font-size: 12px; font-weight: 700;">YouTube</div>
+                  <div style="font-size: 10px; color: var(--text-muted);" id="pub-yt-state">Ready</div>
+                </div>
+              </div>
+
+              <div class="network-check-card active" id="net-ig-card" onclick="toggleNetworkChoice('ig')">
+                <input type="checkbox" id="pub-dest-ig" checked />
+                <span style="font-size: 16px;">📸</span>
+                <div style="line-height: 1.2;">
+                  <div style="font-size: 12px; font-weight: 700;">Instagram</div>
+                  <div style="font-size: 10px; color: var(--text-muted);" id="pub-ig-state">Ready</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 12px;">
+              <label for="pub-title" style="font-size: 12px;">Title / Headline</label>
+              <input type="text" id="pub-title" placeholder="Catchy hook title..." style="font-size: 13px; padding: 10px 14px;" />
+            </div>
+
+            <div class="input-group" style="margin-bottom: 16px;">
+              <label for="pub-desc" style="font-size: 12px;">Caption & Hashtags</label>
+              <textarea id="pub-desc" rows="3" style="width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 10px 12px; color: #f8fafc; font-size: 13px; resize: none;"></textarea>
+            </div>
+
+            <button class="btn-submit" id="pub-submit-btn" onclick="executePublish()" style="padding: 12px 20px; font-size: 14px;">
+              <span>🚀 Publish Clip Now</span>
+            </button>
+            <div id="pub-result-box" style="margin-top: 12px; font-size: 12px; display: none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- macOS QuickLook Modal -->
   <div class="quicklook-overlay" id="quicklook-modal" onclick="closeQuickLook(event)">
     <div class="quicklook-window" onclick="event.stopPropagation()">
@@ -1001,11 +1457,11 @@
         <div style="font-size:12px; color:var(--text-muted);" id="ql-meta">
           0s • 0 MB
         </div>
-        <!-- Icon-Only Action Dock -->
+        <!-- Opus / Klap Style Action Dock -->
         <div class="quicklook-dock">
-          <button class="dock-icon-btn yt" id="ql-btn-yt" title="Post to YouTube Shorts">▶</button>
-          <button class="dock-icon-btn tk" id="ql-btn-tk" title="Post to TikTok">🎵</button>
-          <button class="dock-icon-btn ig" id="ql-btn-ig" title="Post to Instagram Reels">📸</button>
+          <button class="btn-submit" id="ql-btn-publish" style="padding: 6px 16px; font-size: 13px; border-radius: 9999px; margin-right: 6px;" title="Publish to Connected Channels">
+            <span>🚀 Publish Short</span>
+          </button>
           <a class="dock-icon-btn download" id="ql-btn-dl" download title="Download MP4">⬇</a>
           <button class="dock-icon-btn delete" id="ql-btn-del" title="Delete Clip">🗑</button>
         </div>
@@ -1246,9 +1702,13 @@
 
       qlBtnDl.href = clip.url;
 
-      qlBtnYt.onclick = () => postToSocial(clip.rel_path, clip.title || clip.filename, 'youtube');
-      qlBtnTk.onclick = () => postToSocial(clip.rel_path, clip.title || clip.filename, 'tiktok');
-      qlBtnIg.onclick = () => postToSocial(clip.rel_path, clip.title || clip.filename, 'instagram');
+      const qlBtnPublish = document.getElementById('ql-btn-publish');
+      if (qlBtnPublish) {
+        qlBtnPublish.onclick = () => {
+          closeQuickLook();
+          openPublishModal(clip);
+        };
+      }
       qlBtnDel.onclick = () => {
         closeQuickLook();
         deleteClip(clip.rel_path);
@@ -1280,7 +1740,338 @@
           method: 'DELETE'
         });
         if (res.ok) {
-          loadClips();
+          
+    // ==========================================
+    // CONNECTED ACCOUNTS (OPUS / KLAP STYLE)
+    // ==========================================
+    const accountsModal = document.getElementById('accounts-modal');
+    const globalAccountsDot = document.getElementById('global-accounts-dot');
+    let socialState = {
+      youtube: { connected: false, channel_title: null },
+      instagram: { connected: false, username: null },
+      tiktok: { connected: false }
+    };
+
+    async function loadSocialAccounts() {
+      try {
+        const res = await fetch('/api/accounts/status');
+        if (!res.ok) return;
+        socialState = await res.json();
+        renderAccountsUI();
+      } catch (err) {
+        console.error('Error fetching social status:', err);
+      }
+    }
+
+    function renderAccountsUI() {
+      let anyConnected = false;
+
+      // YouTube
+      const ytSub = document.getElementById('yt-account-sub');
+      const ytBtnConn = document.getElementById('yt-btn-connect');
+      const ytBtnDisc = document.getElementById('yt-btn-disconnect');
+      if (socialState.youtube.connected) {
+        anyConnected = true;
+        ytSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: ${socialState.youtube.channel_title || 'YouTube Channel'}</span>`;
+        ytBtnConn.style.display = 'none';
+        ytBtnDisc.style.display = 'inline-block';
+      } else {
+        ytSub.innerText = socialState.youtube.has_client_secret ? 'Ready to Authorize (client_secret found)' : 'Not connected (requires OAuth JSON)';
+        ytBtnConn.style.display = 'inline-block';
+        ytBtnConn.innerText = socialState.youtube.has_client_secret ? 'Authorize' : 'Connect';
+        ytBtnDisc.style.display = 'none';
+      }
+
+      // Instagram
+      const igSub = document.getElementById('ig-account-sub');
+      const igBtnConn = document.getElementById('ig-btn-connect');
+      const igBtnDisc = document.getElementById('ig-btn-disconnect');
+      if (socialState.instagram.connected) {
+        anyConnected = true;
+        igSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: @${socialState.instagram.username || 'Creator Account'}</span>`;
+        igBtnConn.style.display = 'none';
+        igBtnDisc.style.display = 'inline-block';
+      } else {
+        igSub.innerText = 'Not connected (requires Graph Token)';
+        igBtnConn.style.display = 'inline-block';
+        igBtnDisc.style.display = 'none';
+      }
+
+      // TikTok
+      const tkSub = document.getElementById('tk-account-sub');
+      const tkBtnConn = document.getElementById('tk-btn-connect');
+      const tkBtnDisc = document.getElementById('tk-btn-disconnect');
+      if (socialState.tiktok.connected) {
+        anyConnected = true;
+        tkSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected</span>`;
+        tkBtnConn.style.display = 'none';
+        tkBtnDisc.style.display = 'inline-block';
+      } else {
+        tkSub.innerText = 'Not connected';
+        tkBtnConn.style.display = 'inline-block';
+        tkBtnDisc.style.display = 'none';
+      }
+
+      if (globalAccountsDot) {
+        if (anyConnected) {
+          globalAccountsDot.classList.add('connected');
+        } else {
+          globalAccountsDot.classList.remove('connected');
+        }
+      }
+    }
+
+    function openAccountsModal() {
+      loadSocialAccounts();
+      accountsModal.style.display = 'flex';
+    }
+
+    function closeAccountsModal(e) {
+      accountsModal.style.display = 'none';
+    }
+
+    function toggleYtSetup() {
+      const box = document.getElementById('yt-expand-box');
+      if (socialState.youtube.has_client_secret && !socialState.youtube.connected) {
+        // Direct start authorization
+        startDirectYtAuth();
+        return;
+      }
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function startDirectYtAuth() {
+      try {
+        const res = await fetch('/api/accounts/youtube/auth-start', { method: 'POST' });
+        const data = await res.json();
+        alert('Opening OAuth consent in your browser... Approve the login to link your YouTube channel.');
+        setTimeout(loadSocialAccounts, 6000);
+      } catch (err) {
+        alert('Auth failed: ' + err.message);
+      }
+    }
+
+    async function saveYtSecretAndAuth() {
+      const secretJson = document.getElementById('yt-secret-input').value.trim();
+      if (!secretJson) {
+        alert('Please paste the client_secret.json contents.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/youtube/save-secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_secret_json: secretJson })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert('Save failed: ' + (data.detail || JSON.stringify(data)));
+          return;
+        }
+        document.getElementById('yt-expand-box').style.display = 'none';
+        startDirectYtAuth();
+      } catch (err) {
+        alert('Error saving credentials: ' + err.message);
+      }
+    }
+
+    async function disconnectYt() {
+      if (!confirm('Disconnect your YouTube account?')) return;
+      await fetch('/api/accounts/youtube/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleIgSetup() {
+      const box = document.getElementById('ig-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveIgCredentials() {
+      const accountId = document.getElementById('ig-account-id-input').value.trim();
+      const accessToken = document.getElementById('ig-token-input').value.trim();
+      if (!accountId || !accessToken) {
+        alert('Please enter both Instagram Account ID and Meta Access Token.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/instagram/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account_id: accountId, access_token: accessToken })
+        });
+        if (res.ok) {
+          document.getElementById('ig-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('Instagram credentials connected!');
+        } else {
+          const err = await res.json();
+          alert('Save failed: ' + err.detail);
+        }
+      } catch (err) {
+        alert('Error saving Instagram: ' + err.message);
+      }
+    }
+
+    async function disconnectIg() {
+      if (!confirm('Disconnect your Instagram account?')) return;
+      await fetch('/api/accounts/instagram/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleTkSetup() {
+      const box = document.getElementById('tk-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveTkCredentials() {
+      const token = document.getElementById('tk-token-input').value.trim();
+      if (!token) return;
+      try {
+        const res = await fetch('/api/accounts/tiktok/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: token })
+        });
+        if (res.ok) {
+          document.getElementById('tk-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('TikTok token saved!');
+        }
+      } catch (err) {
+        alert('Error saving TikTok: ' + err.message);
+      }
+    }
+
+    async function disconnectTk() {
+      if (!confirm('Disconnect TikTok?')) return;
+      await fetch('/api/accounts/tiktok/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    // ==========================================
+    // 1-CLICK PUBLISH MODAL (OPUS CLIP STYLE)
+    // ==========================================
+    const publishModal = document.getElementById('publish-modal');
+    const pubVideoPreview = document.getElementById('pub-video-preview');
+    const pubTitleInput = document.getElementById('pub-title');
+    const pubDescInput = document.getElementById('pub-desc');
+    const pubClipMeta = document.getElementById('pub-clip-meta');
+    const pubResultBox = document.getElementById('pub-result-box');
+    const pubSubmitBtn = document.getElementById('pub-submit-btn');
+
+    let currentPublishClip = null;
+
+    function openPublishModal(clip) {
+      currentPublishClip = clip;
+      pubVideoPreview.src = clip.url;
+      pubTitleInput.value = (clip.title || clip.filename.replace('.mp4', '')).replace(/_/g, ' ');
+      pubDescInput.value = `${pubTitleInput.value}\n\n#Shorts #Viral #Podcast #Trending #Reels`;
+      pubClipMeta.innerText = `${clip.duration ? Math.round(clip.duration) + 's' : ''} • ${clip.size_mb || 0} MB`;
+      pubResultBox.style.display = 'none';
+      pubResultBox.innerHTML = '';
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Clip Now</span>';
+
+      // Update state tags in network choices
+      document.getElementById('pub-yt-state').innerText = socialState.youtube.connected ? `Ready (${socialState.youtube.channel_title || 'Linked'})` : 'Not linked';
+      document.getElementById('pub-ig-state').innerText = socialState.instagram.connected ? `Ready (@${socialState.instagram.username || 'Linked'})` : 'Not linked';
+
+      publishModal.style.display = 'flex';
+    }
+
+    function closePublishModal(e) {
+      pubVideoPreview.pause();
+      pubVideoPreview.src = '';
+      publishModal.style.display = 'none';
+    }
+
+    function toggleNetworkChoice(network) {
+      const card = document.getElementById(`net-${network}-card`);
+      const check = document.getElementById(`pub-dest-${network}`);
+      check.checked = !check.checked;
+      if (check.checked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+
+    async function executePublish() {
+      if (!currentPublishClip) return;
+      const postYt = document.getElementById('pub-dest-yt').checked;
+      const postIg = document.getElementById('pub-dest-ig').checked;
+
+      if (!postYt && !postIg) {
+        alert('Please select at least one destination (YouTube or Instagram).');
+        return;
+      }
+
+      pubSubmitBtn.disabled = true;
+      pubSubmitBtn.innerHTML = '<span>⏳ Uploading to social platforms...</span>';
+      pubResultBox.style.display = 'block';
+      pubResultBox.innerHTML = '<div style="color:var(--text-muted);">Posting in progress, please wait...</div>';
+
+      const results = [];
+      const title = pubTitleInput.value.trim();
+      const desc = pubDescInput.value.trim();
+
+      // Post to YouTube
+      if (postYt) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'youtube'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ YouTube: Uploaded successfully! <a href="${data.url}" target="_blank" style="color:#6366f1; text-decoration:underline;">View Short</a></div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${err.message}</div>`);
+        }
+      }
+
+      // Post to Instagram
+      if (postIg) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'instagram'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ Instagram: Reel published successfully! (ID: ${data.media_id})</div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${err.message}</div>`);
+        }
+      }
+
+      pubResultBox.innerHTML = results.join('');
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Again</span>';
+    }
+
+    // Initial check on load
+    loadSocialAccounts();
+
+    loadClips();
         } else {
           const err = await res.json();
           alert('Delete failed: ' + (err.detail || 'Unknown error'));
@@ -1300,7 +2091,338 @@
           if (currentFolderId === projectId) {
             currentFolderId = null;
           }
-          loadClips();
+          
+    // ==========================================
+    // CONNECTED ACCOUNTS (OPUS / KLAP STYLE)
+    // ==========================================
+    const accountsModal = document.getElementById('accounts-modal');
+    const globalAccountsDot = document.getElementById('global-accounts-dot');
+    let socialState = {
+      youtube: { connected: false, channel_title: null },
+      instagram: { connected: false, username: null },
+      tiktok: { connected: false }
+    };
+
+    async function loadSocialAccounts() {
+      try {
+        const res = await fetch('/api/accounts/status');
+        if (!res.ok) return;
+        socialState = await res.json();
+        renderAccountsUI();
+      } catch (err) {
+        console.error('Error fetching social status:', err);
+      }
+    }
+
+    function renderAccountsUI() {
+      let anyConnected = false;
+
+      // YouTube
+      const ytSub = document.getElementById('yt-account-sub');
+      const ytBtnConn = document.getElementById('yt-btn-connect');
+      const ytBtnDisc = document.getElementById('yt-btn-disconnect');
+      if (socialState.youtube.connected) {
+        anyConnected = true;
+        ytSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: ${socialState.youtube.channel_title || 'YouTube Channel'}</span>`;
+        ytBtnConn.style.display = 'none';
+        ytBtnDisc.style.display = 'inline-block';
+      } else {
+        ytSub.innerText = socialState.youtube.has_client_secret ? 'Ready to Authorize (client_secret found)' : 'Not connected (requires OAuth JSON)';
+        ytBtnConn.style.display = 'inline-block';
+        ytBtnConn.innerText = socialState.youtube.has_client_secret ? 'Authorize' : 'Connect';
+        ytBtnDisc.style.display = 'none';
+      }
+
+      // Instagram
+      const igSub = document.getElementById('ig-account-sub');
+      const igBtnConn = document.getElementById('ig-btn-connect');
+      const igBtnDisc = document.getElementById('ig-btn-disconnect');
+      if (socialState.instagram.connected) {
+        anyConnected = true;
+        igSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: @${socialState.instagram.username || 'Creator Account'}</span>`;
+        igBtnConn.style.display = 'none';
+        igBtnDisc.style.display = 'inline-block';
+      } else {
+        igSub.innerText = 'Not connected (requires Graph Token)';
+        igBtnConn.style.display = 'inline-block';
+        igBtnDisc.style.display = 'none';
+      }
+
+      // TikTok
+      const tkSub = document.getElementById('tk-account-sub');
+      const tkBtnConn = document.getElementById('tk-btn-connect');
+      const tkBtnDisc = document.getElementById('tk-btn-disconnect');
+      if (socialState.tiktok.connected) {
+        anyConnected = true;
+        tkSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected</span>`;
+        tkBtnConn.style.display = 'none';
+        tkBtnDisc.style.display = 'inline-block';
+      } else {
+        tkSub.innerText = 'Not connected';
+        tkBtnConn.style.display = 'inline-block';
+        tkBtnDisc.style.display = 'none';
+      }
+
+      if (globalAccountsDot) {
+        if (anyConnected) {
+          globalAccountsDot.classList.add('connected');
+        } else {
+          globalAccountsDot.classList.remove('connected');
+        }
+      }
+    }
+
+    function openAccountsModal() {
+      loadSocialAccounts();
+      accountsModal.style.display = 'flex';
+    }
+
+    function closeAccountsModal(e) {
+      accountsModal.style.display = 'none';
+    }
+
+    function toggleYtSetup() {
+      const box = document.getElementById('yt-expand-box');
+      if (socialState.youtube.has_client_secret && !socialState.youtube.connected) {
+        // Direct start authorization
+        startDirectYtAuth();
+        return;
+      }
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function startDirectYtAuth() {
+      try {
+        const res = await fetch('/api/accounts/youtube/auth-start', { method: 'POST' });
+        const data = await res.json();
+        alert('Opening OAuth consent in your browser... Approve the login to link your YouTube channel.');
+        setTimeout(loadSocialAccounts, 6000);
+      } catch (err) {
+        alert('Auth failed: ' + err.message);
+      }
+    }
+
+    async function saveYtSecretAndAuth() {
+      const secretJson = document.getElementById('yt-secret-input').value.trim();
+      if (!secretJson) {
+        alert('Please paste the client_secret.json contents.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/youtube/save-secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_secret_json: secretJson })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert('Save failed: ' + (data.detail || JSON.stringify(data)));
+          return;
+        }
+        document.getElementById('yt-expand-box').style.display = 'none';
+        startDirectYtAuth();
+      } catch (err) {
+        alert('Error saving credentials: ' + err.message);
+      }
+    }
+
+    async function disconnectYt() {
+      if (!confirm('Disconnect your YouTube account?')) return;
+      await fetch('/api/accounts/youtube/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleIgSetup() {
+      const box = document.getElementById('ig-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveIgCredentials() {
+      const accountId = document.getElementById('ig-account-id-input').value.trim();
+      const accessToken = document.getElementById('ig-token-input').value.trim();
+      if (!accountId || !accessToken) {
+        alert('Please enter both Instagram Account ID and Meta Access Token.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/instagram/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account_id: accountId, access_token: accessToken })
+        });
+        if (res.ok) {
+          document.getElementById('ig-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('Instagram credentials connected!');
+        } else {
+          const err = await res.json();
+          alert('Save failed: ' + err.detail);
+        }
+      } catch (err) {
+        alert('Error saving Instagram: ' + err.message);
+      }
+    }
+
+    async function disconnectIg() {
+      if (!confirm('Disconnect your Instagram account?')) return;
+      await fetch('/api/accounts/instagram/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleTkSetup() {
+      const box = document.getElementById('tk-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveTkCredentials() {
+      const token = document.getElementById('tk-token-input').value.trim();
+      if (!token) return;
+      try {
+        const res = await fetch('/api/accounts/tiktok/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: token })
+        });
+        if (res.ok) {
+          document.getElementById('tk-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('TikTok token saved!');
+        }
+      } catch (err) {
+        alert('Error saving TikTok: ' + err.message);
+      }
+    }
+
+    async function disconnectTk() {
+      if (!confirm('Disconnect TikTok?')) return;
+      await fetch('/api/accounts/tiktok/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    // ==========================================
+    // 1-CLICK PUBLISH MODAL (OPUS CLIP STYLE)
+    // ==========================================
+    const publishModal = document.getElementById('publish-modal');
+    const pubVideoPreview = document.getElementById('pub-video-preview');
+    const pubTitleInput = document.getElementById('pub-title');
+    const pubDescInput = document.getElementById('pub-desc');
+    const pubClipMeta = document.getElementById('pub-clip-meta');
+    const pubResultBox = document.getElementById('pub-result-box');
+    const pubSubmitBtn = document.getElementById('pub-submit-btn');
+
+    let currentPublishClip = null;
+
+    function openPublishModal(clip) {
+      currentPublishClip = clip;
+      pubVideoPreview.src = clip.url;
+      pubTitleInput.value = (clip.title || clip.filename.replace('.mp4', '')).replace(/_/g, ' ');
+      pubDescInput.value = `${pubTitleInput.value}\n\n#Shorts #Viral #Podcast #Trending #Reels`;
+      pubClipMeta.innerText = `${clip.duration ? Math.round(clip.duration) + 's' : ''} • ${clip.size_mb || 0} MB`;
+      pubResultBox.style.display = 'none';
+      pubResultBox.innerHTML = '';
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Clip Now</span>';
+
+      // Update state tags in network choices
+      document.getElementById('pub-yt-state').innerText = socialState.youtube.connected ? `Ready (${socialState.youtube.channel_title || 'Linked'})` : 'Not linked';
+      document.getElementById('pub-ig-state').innerText = socialState.instagram.connected ? `Ready (@${socialState.instagram.username || 'Linked'})` : 'Not linked';
+
+      publishModal.style.display = 'flex';
+    }
+
+    function closePublishModal(e) {
+      pubVideoPreview.pause();
+      pubVideoPreview.src = '';
+      publishModal.style.display = 'none';
+    }
+
+    function toggleNetworkChoice(network) {
+      const card = document.getElementById(`net-${network}-card`);
+      const check = document.getElementById(`pub-dest-${network}`);
+      check.checked = !check.checked;
+      if (check.checked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+
+    async function executePublish() {
+      if (!currentPublishClip) return;
+      const postYt = document.getElementById('pub-dest-yt').checked;
+      const postIg = document.getElementById('pub-dest-ig').checked;
+
+      if (!postYt && !postIg) {
+        alert('Please select at least one destination (YouTube or Instagram).');
+        return;
+      }
+
+      pubSubmitBtn.disabled = true;
+      pubSubmitBtn.innerHTML = '<span>⏳ Uploading to social platforms...</span>';
+      pubResultBox.style.display = 'block';
+      pubResultBox.innerHTML = '<div style="color:var(--text-muted);">Posting in progress, please wait...</div>';
+
+      const results = [];
+      const title = pubTitleInput.value.trim();
+      const desc = pubDescInput.value.trim();
+
+      // Post to YouTube
+      if (postYt) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'youtube'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ YouTube: Uploaded successfully! <a href="${data.url}" target="_blank" style="color:#6366f1; text-decoration:underline;">View Short</a></div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${err.message}</div>`);
+        }
+      }
+
+      // Post to Instagram
+      if (postIg) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'instagram'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ Instagram: Reel published successfully! (ID: ${data.media_id})</div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${err.message}</div>`);
+        }
+      }
+
+      pubResultBox.innerHTML = results.join('');
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Again</span>';
+    }
+
+    // Initial check on load
+    loadSocialAccounts();
+
+    loadClips();
         } else {
           const err = await res.json();
           alert('Delete project failed: ' + (err.detail || 'Unknown error'));
@@ -1407,7 +2529,338 @@
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<span>✨ Generate Viral Shorts</span>`;
           statusTitle.innerText = 'COMPLETED 🎉';
-          loadClips();
+          
+    // ==========================================
+    // CONNECTED ACCOUNTS (OPUS / KLAP STYLE)
+    // ==========================================
+    const accountsModal = document.getElementById('accounts-modal');
+    const globalAccountsDot = document.getElementById('global-accounts-dot');
+    let socialState = {
+      youtube: { connected: false, channel_title: null },
+      instagram: { connected: false, username: null },
+      tiktok: { connected: false }
+    };
+
+    async function loadSocialAccounts() {
+      try {
+        const res = await fetch('/api/accounts/status');
+        if (!res.ok) return;
+        socialState = await res.json();
+        renderAccountsUI();
+      } catch (err) {
+        console.error('Error fetching social status:', err);
+      }
+    }
+
+    function renderAccountsUI() {
+      let anyConnected = false;
+
+      // YouTube
+      const ytSub = document.getElementById('yt-account-sub');
+      const ytBtnConn = document.getElementById('yt-btn-connect');
+      const ytBtnDisc = document.getElementById('yt-btn-disconnect');
+      if (socialState.youtube.connected) {
+        anyConnected = true;
+        ytSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: ${socialState.youtube.channel_title || 'YouTube Channel'}</span>`;
+        ytBtnConn.style.display = 'none';
+        ytBtnDisc.style.display = 'inline-block';
+      } else {
+        ytSub.innerText = socialState.youtube.has_client_secret ? 'Ready to Authorize (client_secret found)' : 'Not connected (requires OAuth JSON)';
+        ytBtnConn.style.display = 'inline-block';
+        ytBtnConn.innerText = socialState.youtube.has_client_secret ? 'Authorize' : 'Connect';
+        ytBtnDisc.style.display = 'none';
+      }
+
+      // Instagram
+      const igSub = document.getElementById('ig-account-sub');
+      const igBtnConn = document.getElementById('ig-btn-connect');
+      const igBtnDisc = document.getElementById('ig-btn-disconnect');
+      if (socialState.instagram.connected) {
+        anyConnected = true;
+        igSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: @${socialState.instagram.username || 'Creator Account'}</span>`;
+        igBtnConn.style.display = 'none';
+        igBtnDisc.style.display = 'inline-block';
+      } else {
+        igSub.innerText = 'Not connected (requires Graph Token)';
+        igBtnConn.style.display = 'inline-block';
+        igBtnDisc.style.display = 'none';
+      }
+
+      // TikTok
+      const tkSub = document.getElementById('tk-account-sub');
+      const tkBtnConn = document.getElementById('tk-btn-connect');
+      const tkBtnDisc = document.getElementById('tk-btn-disconnect');
+      if (socialState.tiktok.connected) {
+        anyConnected = true;
+        tkSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected</span>`;
+        tkBtnConn.style.display = 'none';
+        tkBtnDisc.style.display = 'inline-block';
+      } else {
+        tkSub.innerText = 'Not connected';
+        tkBtnConn.style.display = 'inline-block';
+        tkBtnDisc.style.display = 'none';
+      }
+
+      if (globalAccountsDot) {
+        if (anyConnected) {
+          globalAccountsDot.classList.add('connected');
+        } else {
+          globalAccountsDot.classList.remove('connected');
+        }
+      }
+    }
+
+    function openAccountsModal() {
+      loadSocialAccounts();
+      accountsModal.style.display = 'flex';
+    }
+
+    function closeAccountsModal(e) {
+      accountsModal.style.display = 'none';
+    }
+
+    function toggleYtSetup() {
+      const box = document.getElementById('yt-expand-box');
+      if (socialState.youtube.has_client_secret && !socialState.youtube.connected) {
+        // Direct start authorization
+        startDirectYtAuth();
+        return;
+      }
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function startDirectYtAuth() {
+      try {
+        const res = await fetch('/api/accounts/youtube/auth-start', { method: 'POST' });
+        const data = await res.json();
+        alert('Opening OAuth consent in your browser... Approve the login to link your YouTube channel.');
+        setTimeout(loadSocialAccounts, 6000);
+      } catch (err) {
+        alert('Auth failed: ' + err.message);
+      }
+    }
+
+    async function saveYtSecretAndAuth() {
+      const secretJson = document.getElementById('yt-secret-input').value.trim();
+      if (!secretJson) {
+        alert('Please paste the client_secret.json contents.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/youtube/save-secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_secret_json: secretJson })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert('Save failed: ' + (data.detail || JSON.stringify(data)));
+          return;
+        }
+        document.getElementById('yt-expand-box').style.display = 'none';
+        startDirectYtAuth();
+      } catch (err) {
+        alert('Error saving credentials: ' + err.message);
+      }
+    }
+
+    async function disconnectYt() {
+      if (!confirm('Disconnect your YouTube account?')) return;
+      await fetch('/api/accounts/youtube/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleIgSetup() {
+      const box = document.getElementById('ig-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveIgCredentials() {
+      const accountId = document.getElementById('ig-account-id-input').value.trim();
+      const accessToken = document.getElementById('ig-token-input').value.trim();
+      if (!accountId || !accessToken) {
+        alert('Please enter both Instagram Account ID and Meta Access Token.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/instagram/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account_id: accountId, access_token: accessToken })
+        });
+        if (res.ok) {
+          document.getElementById('ig-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('Instagram credentials connected!');
+        } else {
+          const err = await res.json();
+          alert('Save failed: ' + err.detail);
+        }
+      } catch (err) {
+        alert('Error saving Instagram: ' + err.message);
+      }
+    }
+
+    async function disconnectIg() {
+      if (!confirm('Disconnect your Instagram account?')) return;
+      await fetch('/api/accounts/instagram/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleTkSetup() {
+      const box = document.getElementById('tk-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveTkCredentials() {
+      const token = document.getElementById('tk-token-input').value.trim();
+      if (!token) return;
+      try {
+        const res = await fetch('/api/accounts/tiktok/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: token })
+        });
+        if (res.ok) {
+          document.getElementById('tk-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('TikTok token saved!');
+        }
+      } catch (err) {
+        alert('Error saving TikTok: ' + err.message);
+      }
+    }
+
+    async function disconnectTk() {
+      if (!confirm('Disconnect TikTok?')) return;
+      await fetch('/api/accounts/tiktok/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    // ==========================================
+    // 1-CLICK PUBLISH MODAL (OPUS CLIP STYLE)
+    // ==========================================
+    const publishModal = document.getElementById('publish-modal');
+    const pubVideoPreview = document.getElementById('pub-video-preview');
+    const pubTitleInput = document.getElementById('pub-title');
+    const pubDescInput = document.getElementById('pub-desc');
+    const pubClipMeta = document.getElementById('pub-clip-meta');
+    const pubResultBox = document.getElementById('pub-result-box');
+    const pubSubmitBtn = document.getElementById('pub-submit-btn');
+
+    let currentPublishClip = null;
+
+    function openPublishModal(clip) {
+      currentPublishClip = clip;
+      pubVideoPreview.src = clip.url;
+      pubTitleInput.value = (clip.title || clip.filename.replace('.mp4', '')).replace(/_/g, ' ');
+      pubDescInput.value = `${pubTitleInput.value}\n\n#Shorts #Viral #Podcast #Trending #Reels`;
+      pubClipMeta.innerText = `${clip.duration ? Math.round(clip.duration) + 's' : ''} • ${clip.size_mb || 0} MB`;
+      pubResultBox.style.display = 'none';
+      pubResultBox.innerHTML = '';
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Clip Now</span>';
+
+      // Update state tags in network choices
+      document.getElementById('pub-yt-state').innerText = socialState.youtube.connected ? `Ready (${socialState.youtube.channel_title || 'Linked'})` : 'Not linked';
+      document.getElementById('pub-ig-state').innerText = socialState.instagram.connected ? `Ready (@${socialState.instagram.username || 'Linked'})` : 'Not linked';
+
+      publishModal.style.display = 'flex';
+    }
+
+    function closePublishModal(e) {
+      pubVideoPreview.pause();
+      pubVideoPreview.src = '';
+      publishModal.style.display = 'none';
+    }
+
+    function toggleNetworkChoice(network) {
+      const card = document.getElementById(`net-${network}-card`);
+      const check = document.getElementById(`pub-dest-${network}`);
+      check.checked = !check.checked;
+      if (check.checked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+
+    async function executePublish() {
+      if (!currentPublishClip) return;
+      const postYt = document.getElementById('pub-dest-yt').checked;
+      const postIg = document.getElementById('pub-dest-ig').checked;
+
+      if (!postYt && !postIg) {
+        alert('Please select at least one destination (YouTube or Instagram).');
+        return;
+      }
+
+      pubSubmitBtn.disabled = true;
+      pubSubmitBtn.innerHTML = '<span>⏳ Uploading to social platforms...</span>';
+      pubResultBox.style.display = 'block';
+      pubResultBox.innerHTML = '<div style="color:var(--text-muted);">Posting in progress, please wait...</div>';
+
+      const results = [];
+      const title = pubTitleInput.value.trim();
+      const desc = pubDescInput.value.trim();
+
+      // Post to YouTube
+      if (postYt) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'youtube'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ YouTube: Uploaded successfully! <a href="${data.url}" target="_blank" style="color:#6366f1; text-decoration:underline;">View Short</a></div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${err.message}</div>`);
+        }
+      }
+
+      // Post to Instagram
+      if (postIg) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'instagram'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ Instagram: Reel published successfully! (ID: ${data.media_id})</div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${err.message}</div>`);
+        }
+      }
+
+      pubResultBox.innerHTML = results.join('');
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Again</span>';
+    }
+
+    // Initial check on load
+    loadSocialAccounts();
+
+    loadClips();
         } else if (state.status === 'error') {
           clearInterval(pollInterval);
           submitBtn.disabled = false;
@@ -1419,6 +2872,337 @@
         console.error(err);
       }
     }
+
+    
+    // ==========================================
+    // CONNECTED ACCOUNTS (OPUS / KLAP STYLE)
+    // ==========================================
+    const accountsModal = document.getElementById('accounts-modal');
+    const globalAccountsDot = document.getElementById('global-accounts-dot');
+    let socialState = {
+      youtube: { connected: false, channel_title: null },
+      instagram: { connected: false, username: null },
+      tiktok: { connected: false }
+    };
+
+    async function loadSocialAccounts() {
+      try {
+        const res = await fetch('/api/accounts/status');
+        if (!res.ok) return;
+        socialState = await res.json();
+        renderAccountsUI();
+      } catch (err) {
+        console.error('Error fetching social status:', err);
+      }
+    }
+
+    function renderAccountsUI() {
+      let anyConnected = false;
+
+      // YouTube
+      const ytSub = document.getElementById('yt-account-sub');
+      const ytBtnConn = document.getElementById('yt-btn-connect');
+      const ytBtnDisc = document.getElementById('yt-btn-disconnect');
+      if (socialState.youtube.connected) {
+        anyConnected = true;
+        ytSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: ${socialState.youtube.channel_title || 'YouTube Channel'}</span>`;
+        ytBtnConn.style.display = 'none';
+        ytBtnDisc.style.display = 'inline-block';
+      } else {
+        ytSub.innerText = socialState.youtube.has_client_secret ? 'Ready to Authorize (client_secret found)' : 'Not connected (requires OAuth JSON)';
+        ytBtnConn.style.display = 'inline-block';
+        ytBtnConn.innerText = socialState.youtube.has_client_secret ? 'Authorize' : 'Connect';
+        ytBtnDisc.style.display = 'none';
+      }
+
+      // Instagram
+      const igSub = document.getElementById('ig-account-sub');
+      const igBtnConn = document.getElementById('ig-btn-connect');
+      const igBtnDisc = document.getElementById('ig-btn-disconnect');
+      if (socialState.instagram.connected) {
+        anyConnected = true;
+        igSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected: @${socialState.instagram.username || 'Creator Account'}</span>`;
+        igBtnConn.style.display = 'none';
+        igBtnDisc.style.display = 'inline-block';
+      } else {
+        igSub.innerText = 'Not connected (requires Graph Token)';
+        igBtnConn.style.display = 'inline-block';
+        igBtnDisc.style.display = 'none';
+      }
+
+      // TikTok
+      const tkSub = document.getElementById('tk-account-sub');
+      const tkBtnConn = document.getElementById('tk-btn-connect');
+      const tkBtnDisc = document.getElementById('tk-btn-disconnect');
+      if (socialState.tiktok.connected) {
+        anyConnected = true;
+        tkSub.innerHTML = `<span style="color:#10b981; font-weight:600;">● Connected</span>`;
+        tkBtnConn.style.display = 'none';
+        tkBtnDisc.style.display = 'inline-block';
+      } else {
+        tkSub.innerText = 'Not connected';
+        tkBtnConn.style.display = 'inline-block';
+        tkBtnDisc.style.display = 'none';
+      }
+
+      if (globalAccountsDot) {
+        if (anyConnected) {
+          globalAccountsDot.classList.add('connected');
+        } else {
+          globalAccountsDot.classList.remove('connected');
+        }
+      }
+    }
+
+    function openAccountsModal() {
+      loadSocialAccounts();
+      accountsModal.style.display = 'flex';
+    }
+
+    function closeAccountsModal(e) {
+      accountsModal.style.display = 'none';
+    }
+
+    function toggleYtSetup() {
+      const box = document.getElementById('yt-expand-box');
+      if (socialState.youtube.has_client_secret && !socialState.youtube.connected) {
+        // Direct start authorization
+        startDirectYtAuth();
+        return;
+      }
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function startDirectYtAuth() {
+      try {
+        const res = await fetch('/api/accounts/youtube/auth-start', { method: 'POST' });
+        const data = await res.json();
+        alert('Opening OAuth consent in your browser... Approve the login to link your YouTube channel.');
+        setTimeout(loadSocialAccounts, 6000);
+      } catch (err) {
+        alert('Auth failed: ' + err.message);
+      }
+    }
+
+    async function saveYtSecretAndAuth() {
+      const secretJson = document.getElementById('yt-secret-input').value.trim();
+      if (!secretJson) {
+        alert('Please paste the client_secret.json contents.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/youtube/save-secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_secret_json: secretJson })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert('Save failed: ' + (data.detail || JSON.stringify(data)));
+          return;
+        }
+        document.getElementById('yt-expand-box').style.display = 'none';
+        startDirectYtAuth();
+      } catch (err) {
+        alert('Error saving credentials: ' + err.message);
+      }
+    }
+
+    async function disconnectYt() {
+      if (!confirm('Disconnect your YouTube account?')) return;
+      await fetch('/api/accounts/youtube/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleIgSetup() {
+      const box = document.getElementById('ig-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveIgCredentials() {
+      const accountId = document.getElementById('ig-account-id-input').value.trim();
+      const accessToken = document.getElementById('ig-token-input').value.trim();
+      if (!accountId || !accessToken) {
+        alert('Please enter both Instagram Account ID and Meta Access Token.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/accounts/instagram/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account_id: accountId, access_token: accessToken })
+        });
+        if (res.ok) {
+          document.getElementById('ig-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('Instagram credentials connected!');
+        } else {
+          const err = await res.json();
+          alert('Save failed: ' + err.detail);
+        }
+      } catch (err) {
+        alert('Error saving Instagram: ' + err.message);
+      }
+    }
+
+    async function disconnectIg() {
+      if (!confirm('Disconnect your Instagram account?')) return;
+      await fetch('/api/accounts/instagram/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    function toggleTkSetup() {
+      const box = document.getElementById('tk-expand-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveTkCredentials() {
+      const token = document.getElementById('tk-token-input').value.trim();
+      if (!token) return;
+      try {
+        const res = await fetch('/api/accounts/tiktok/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: token })
+        });
+        if (res.ok) {
+          document.getElementById('tk-expand-box').style.display = 'none';
+          loadSocialAccounts();
+          alert('TikTok token saved!');
+        }
+      } catch (err) {
+        alert('Error saving TikTok: ' + err.message);
+      }
+    }
+
+    async function disconnectTk() {
+      if (!confirm('Disconnect TikTok?')) return;
+      await fetch('/api/accounts/tiktok/disconnect', { method: 'DELETE' });
+      loadSocialAccounts();
+    }
+
+    // ==========================================
+    // 1-CLICK PUBLISH MODAL (OPUS CLIP STYLE)
+    // ==========================================
+    const publishModal = document.getElementById('publish-modal');
+    const pubVideoPreview = document.getElementById('pub-video-preview');
+    const pubTitleInput = document.getElementById('pub-title');
+    const pubDescInput = document.getElementById('pub-desc');
+    const pubClipMeta = document.getElementById('pub-clip-meta');
+    const pubResultBox = document.getElementById('pub-result-box');
+    const pubSubmitBtn = document.getElementById('pub-submit-btn');
+
+    let currentPublishClip = null;
+
+    function openPublishModal(clip) {
+      currentPublishClip = clip;
+      pubVideoPreview.src = clip.url;
+      pubTitleInput.value = (clip.title || clip.filename.replace('.mp4', '')).replace(/_/g, ' ');
+      pubDescInput.value = `${pubTitleInput.value}\n\n#Shorts #Viral #Podcast #Trending #Reels`;
+      pubClipMeta.innerText = `${clip.duration ? Math.round(clip.duration) + 's' : ''} • ${clip.size_mb || 0} MB`;
+      pubResultBox.style.display = 'none';
+      pubResultBox.innerHTML = '';
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Clip Now</span>';
+
+      // Update state tags in network choices
+      document.getElementById('pub-yt-state').innerText = socialState.youtube.connected ? `Ready (${socialState.youtube.channel_title || 'Linked'})` : 'Not linked';
+      document.getElementById('pub-ig-state').innerText = socialState.instagram.connected ? `Ready (@${socialState.instagram.username || 'Linked'})` : 'Not linked';
+
+      publishModal.style.display = 'flex';
+    }
+
+    function closePublishModal(e) {
+      pubVideoPreview.pause();
+      pubVideoPreview.src = '';
+      publishModal.style.display = 'none';
+    }
+
+    function toggleNetworkChoice(network) {
+      const card = document.getElementById(`net-${network}-card`);
+      const check = document.getElementById(`pub-dest-${network}`);
+      check.checked = !check.checked;
+      if (check.checked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+
+    async function executePublish() {
+      if (!currentPublishClip) return;
+      const postYt = document.getElementById('pub-dest-yt').checked;
+      const postIg = document.getElementById('pub-dest-ig').checked;
+
+      if (!postYt && !postIg) {
+        alert('Please select at least one destination (YouTube or Instagram).');
+        return;
+      }
+
+      pubSubmitBtn.disabled = true;
+      pubSubmitBtn.innerHTML = '<span>⏳ Uploading to social platforms...</span>';
+      pubResultBox.style.display = 'block';
+      pubResultBox.innerHTML = '<div style="color:var(--text-muted);">Posting in progress, please wait...</div>';
+
+      const results = [];
+      const title = pubTitleInput.value.trim();
+      const desc = pubDescInput.value.trim();
+
+      // Post to YouTube
+      if (postYt) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'youtube'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ YouTube: Uploaded successfully! <a href="${data.url}" target="_blank" style="color:#6366f1; text-decoration:underline;">View Short</a></div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ YouTube Error: ${err.message}</div>`);
+        }
+      }
+
+      // Post to Instagram
+      if (postIg) {
+        try {
+          const res = await fetch('/api/post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rel_path: currentPublishClip.rel_path,
+              title: title,
+              description: desc,
+              platform: 'instagram'
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            results.push(`<div style="color:#10b981; margin-bottom:4px;">✓ Instagram: Reel published successfully! (ID: ${data.media_id})</div>`);
+          } else {
+            results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${data.detail || JSON.stringify(data)}</div>`);
+          }
+        } catch (err) {
+          results.push(`<div style="color:#ef4444; margin-bottom:4px;">✕ Instagram Error: ${err.message}</div>`);
+        }
+      }
+
+      pubResultBox.innerHTML = results.join('');
+      pubSubmitBtn.disabled = false;
+      pubSubmitBtn.innerHTML = '<span>🚀 Publish Again</span>';
+    }
+
+    // Initial check on load
+    loadSocialAccounts();
 
     loadClips();
   </script>
