@@ -57,6 +57,29 @@ SEMANTIC_TRIGGERS = [
     }
 ]
 
+def render_colored_emoji(emoji_char: str, target_size: int = 56) -> Optional[Image.Image]:
+    """
+    Renders high-definition Apple Color Emoji bitmap on macOS.
+    Apple Color Emoji uses fixed 160px embedded strikes; we render and downscale smoothly.
+    """
+    if not emoji_char:
+        return None
+    for p in ["/System/Library/Fonts/Apple Color Emoji.ttc", "/System/Library/Fonts/Apple Color Emoji.ttf"]:
+        if os.path.exists(p):
+            try:
+                efont = ImageFont.truetype(p, 160)
+                canvas = Image.new("RGBA", (260, 260), (0, 0, 0, 0))
+                d = ImageDraw.Draw(canvas)
+                d.text((20, 20), emoji_char, font=efont, embedded_color=True)
+                bbox = canvas.getbbox()
+                if bbox:
+                    canvas = canvas.crop(bbox)
+                canvas.thumbnail((target_size, target_size), Image.Resampling.LANCZOS)
+                return canvas
+            except Exception:
+                pass
+    return None
+
 def render_dynamic_badge(
     emoji_char: str,
     badge_title: str,
@@ -65,7 +88,7 @@ def render_dynamic_badge(
 ) -> Image.Image:
     """
     Renders a modern, cinematic glassmorphism motion badge pill (1080p width context).
-    Scaled dynamically based on title length.
+    Scaled dynamically based on title length and includes crisp full-color Apple emojis.
     """
     clean_title = badge_title.strip().upper()
     width = 760
@@ -89,26 +112,35 @@ def render_dynamic_badge(
     # Subtle inner top glow highlight
     draw.line([(32, 12), (width - 44, 12)], fill=(255, 255, 255, 70), width=2)
 
-    font_title = get_font(38)
-    full_text = f"{emoji_char}  {clean_title}" if emoji_char else clean_title
+    font_title = get_font(36)
+    emoji_img = render_colored_emoji(emoji_char, target_size=54)
 
-    # Measure text
-    bbox = draw.textbbox((0, 0), full_text, font=font_title)
+    bbox = draw.textbbox((0, 0), clean_title, font=font_title)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
     # If too wide, fallback to smaller font
-    if tw > (width - 60):
-        font_title = get_font(32)
-        bbox = draw.textbbox((0, 0), full_text, font=font_title)
+    if tw > (width - (110 if emoji_img else 60)):
+        font_title = get_font(30)
+        bbox = draw.textbbox((0, 0), clean_title, font=font_title)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
-    tx = (width - tw) // 2
-    ty = (height - th) // 2 - 4
+    if emoji_img:
+        ew, eh = emoji_img.size
+        gap = 18
+        total_content_w = ew + gap + tw
+        start_x = (width - total_content_w) // 2
+        ey = (height - eh) // 2
+        img.paste(emoji_img, (start_x, ey), emoji_img)
+        tx = start_x + ew + gap
+        ty = (height - th) // 2 - 4
+    else:
+        tx = (width - tw) // 2
+        ty = (height - th) // 2 - 4
 
     # Text drop shadow
-    draw.text((tx + 2, ty + 2), full_text, font=font_title, fill=(0, 0, 0, 220))
+    draw.text((tx + 2, ty + 2), clean_title, font=font_title, fill=(0, 0, 0, 220))
     # Crisp glowing title
-    draw.text((tx, ty), full_text, font=font_title, fill=(*rgb, 255))
+    draw.text((tx, ty), clean_title, font=font_title, fill=(*rgb, 255))
 
     if out_path:
         img.save(out_path, "PNG")
