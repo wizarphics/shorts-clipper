@@ -167,14 +167,17 @@ def process_pipeline(req: ClipRequest):
                 # Scan spoken words in this clip window for contextual SFX & motion callouts
                 dynamic_fx = []
                 if req.add_dynamic_effects:
+                    update_state("rendering", clip_prog, f"AI Director generating motion graphics & SFX for clip {idx}/{total_clips}...")
                     dynamic_fx = scan_transcript_for_effects(
                         segments=segments,
                         clip_start=clip["start_time"],
                         clip_end=clip["end_time"],
-                        min_gap=5.0
+                        min_gap=4.5,
+                        use_ai=True
                     )
                     if dynamic_fx:
-                        print(f"[*] Detected {len(dynamic_fx)} contextual SFX & motion callouts for clip {idx}: {[e['word'] for e in dynamic_fx]}")
+                        labels = [e.get("badge_title", e.get("word", "")) for e in dynamic_fx]
+                        print(f"[*] AI Motion & SFX Director added {len(dynamic_fx)} effects for clip {idx}: {labels}")
 
                 enhance_video_audio(
                     video_path=str(subtitled_path),

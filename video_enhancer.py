@@ -11,10 +11,14 @@ Adds:
 
 import os
 import re
+import json
 import subprocess
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from PIL import Image, ImageDraw, ImageFont
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).parent.resolve()
 AUDIO_DIR = BASE_DIR / "assets" / "audio"
@@ -53,11 +57,201 @@ SEMANTIC_TRIGGERS = [
     }
 ]
 
-def scan_transcript_for_effects(segments: List[Dict[str, Any]], clip_start: float, clip_end: float, min_gap: float = 6.0) -> List[Dict[str, Any]]:
+def render_dynamic_badge(
+    emoji_char: str,
+    badge_title: str,
+    accent_hex: str = "#38bdf8",
+    out_path: Optional[str] = None
+) -> Image.Image:
     """
-    Scans word-level timestamps in the clip's time range for high-energy semantic triggers.
-    Enforces a min_gap between effects so videos never feel cluttered.
+    Renders a modern, cinematic glassmorphism motion badge pill (1080p width context).
+    Scaled dynamically based on title length.
     """
+    clean_title = badge_title.strip().upper()
+    width = 760
+    height = 130
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Parse accent color
+    h = accent_hex.lstrip("#")
+    try:
+        rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+    except Exception:
+        rgb = (56, 189, 248) # Default cyan
+
+    # Soft dark drop shadow
+    draw.rounded_rectangle([8, 8, width - 8, height - 8], radius=28, fill=(0, 0, 0, 160))
+
+    # Dark translucent glass pill with neon border
+    draw.rounded_rectangle([4, 4, width - 12, height - 12], radius=26, fill=(15, 23, 42, 235), outline=(*rgb, 240), width=4)
+
+    # Subtle inner top glow highlight
+    draw.line([(32, 12), (width - 44, 12)], fill=(255, 255, 255, 70), width=2)
+
+    font_title = get_font(38)
+    full_text = f"{emoji_char}  {clean_title}" if emoji_char else clean_title
+
+    # Measure text
+    bbox = draw.textbbox((0, 0), full_text, font=font_title)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+
+    # If too wide, fallback to smaller font
+    if tw > (width - 60):
+        font_title = get_font(32)
+        bbox = draw.textbbox((0, 0), full_text, font=font_title)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+
+    tx = (width - tw) // 2
+    ty = (height - th) // 2 - 4
+
+    # Text drop shadow
+    draw.text((tx + 2, ty + 2), full_text, font=font_title, fill=(0, 0, 0, 220))
+    # Crisp glowing title
+    draw.text((tx, ty), full_text, font=font_title, fill=(*rgb, 255))
+
+    if out_path:
+        img.save(out_path, "PNG")
+    return img
+
+def get_ai_directed_cues(
+    clip_transcript: str,
+    clip_duration: float,
+    api_key: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """
+    Uses Gemini AI as the 'Real-time Motion & Sound Director' to analyze the speech transcript
+    and generate punchy, relevant motion graphic callouts and audio sound effects.
+    """
+    if not api_key:
+        api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key or not clip_transcript.strip():
+        return []
+
+    try:
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(api_key=api_key)
+        prompt = f"""
+You are an expert viral TikTok and YouTube Shorts Motion Graphic and Sound Director (like Opus Clip and Klap).
+Analyze the following short video clip transcript (duration: {clip_duration:.1f} seconds):
+
+CLIP TRANSCRIPT:
+\"\"\"{clip_transcript}\"\"\"
+
+Task:
+Direct 2 to 4 high-impact visual callouts / motion badges and sound effects synchronized to the most pivotal moments, punchlines, or key takeaways of the video.
+
+Rules:
+1. "time": Timestamp in seconds (float between 1.5 and {max(2.0, clip_duration - 1.5):.1f}) when the badge & sound should hit.
+2. "badge_title": 2 to 4 punchy, viral words summarizing that specific moment (e.g., "50/50 DATING TRAP", "BRUTAL TRUTH", "PASSIVE INCOME", "RED FLAG WARNING", "CHESS MOVE", "SECRET FORMULA").
+3. "emoji": Exactly one fitting emoji (e.g. "🚨", "💸", "☕", "🧠", "🔥", "⚠️", "👑", "🎯").
+4. "sfx": One of: "boom", "ding", "cash", "pop", "whoosh".
+5. "accent_color": A vibrant hex color (e.g. "#ef4444" for warning/red flags, "#22c55e" for money/success, "#eab308" for truth/gold, "#38bdf8" for facts/advice, "#a855f7" for mindset/psychology).
+6. Ensure each cue is at least 4.5 seconds apart from the previous cue so the video never feels cluttered.
+
+Respond ONLY with a JSON array:
+[
+  {{
+    "time": 3.5,
+    "duration": 2.2,
+    "badge_title": "BRUTAL REALITY",
+    "emoji": "⚠️",
+    "sfx": "boom",
+    "accent_color": "#ef4444"
+  }}
+]
+"""
+        models_to_try = [
+            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-3.5-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash",
+            "gemini-flash-latest"
+        ]
+        for model in models_to_try:
+            try:
+                res = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(response_mime_type="application/json")
+                )
+                if res and res.text:
+                    parsed = json.loads(res.text)
+                    if isinstance(parsed, list) and len(parsed) > 0:
+                        cues = []
+                        last_time = -999.0
+                        for item in parsed:
+                            t = float(item.get("time", 0.0))
+                            if t < 1.0 or t > (clip_duration - 1.0) or t < (last_time + 4.0):
+                                continue
+                            sfx_raw = str(item.get("sfx", "ding")).lower()
+                            if any(k in sfx_raw for k in ["cash", "money", "dollar", "register"]):
+                                sfx_name = "sfx_cash.wav"
+                            elif any(k in sfx_raw for k in ["boom", "vine", "explosion", "impact", "clang"]):
+                                sfx_name = "sfx_boom.wav"
+                            elif any(k in sfx_raw for k in ["ding", "bell", "chime", "correct"]):
+                                sfx_name = "sfx_ding.wav"
+                            elif any(k in sfx_raw for k in ["whoosh", "swoosh", "transition"]):
+                                sfx_name = "hook_whoosh.m4a"
+                            else:
+                                sfx_name = "sfx_pop.wav"
+
+                            cues.append({
+                                "time": round(t, 2),
+                                "duration": float(item.get("duration", 2.2)),
+                                "badge_title": str(item.get("badge_title", "KEY MOMENT")),
+                                "emoji": str(item.get("emoji", "🔥")),
+                                "sfx_file": str(AUDIO_DIR / sfx_name),
+                                "accent_color": str(item.get("accent_color", "#38bdf8")),
+                                "is_ai_generated": True
+                            })
+                            last_time = t
+                        if cues:
+                            return cues
+            except Exception as e:
+                print(f"[AI Director] Model {model} attempt failed: {e}")
+                continue
+
+    except Exception as e:
+        print(f"[AI Director] Error initializing Gemini AI cues: {e}")
+
+    return []
+
+def scan_transcript_for_effects(
+    segments: List[Dict[str, Any]],
+    clip_start: float,
+    clip_end: float,
+    min_gap: float = 6.0,
+    use_ai: bool = True
+) -> List[Dict[str, Any]]:
+    """
+    Intelligently generates context-aware motion badges and sound effects:
+    1. First uses Gemini AI Real-time Director to generate tailored badges and SFX for the clip.
+    2. Falls back seamlessly to semantic trigger scanning if AI is offline or encounters high load.
+    """
+    clip_dur = max(1.0, clip_end - clip_start)
+
+    # 1. Try Gemini AI Director
+    if use_ai:
+        # Extract clip text
+        clip_words = []
+        for seg in segments:
+            if seg.get("end", 0.0) >= clip_start and seg.get("start", 0.0) <= clip_end:
+                clip_words.append(seg.get("text", "").strip())
+        clip_transcript = " ".join(clip_words).strip()
+
+        if clip_transcript:
+            ai_cues = get_ai_directed_cues(clip_transcript, clip_dur)
+            if ai_cues:
+                print(f"[AI Director] Successfully generated {len(ai_cues)} real-time AI motion callouts & SFX!")
+                return ai_cues
+
+    # 2. Heuristic fallback
     events = []
     last_event_time = -999.0
 
@@ -253,8 +447,18 @@ def enhance_video_audio(
             curr_input_idx += 1
 
         badge_inputs_map = []
-        for eff in active_effects:
-            inputs.extend(["-i", eff["graphic_file"]])
+        for b_idx_counter, eff in enumerate(active_effects):
+            badge_path = eff.get("graphic_file")
+            # If AI generated or dynamic, render the custom badge image on the fly!
+            if not badge_path or not Path(badge_path).exists():
+                b_title = eff.get("badge_title", "KEY MOMENT")
+                b_emoji = eff.get("emoji", "🔥")
+                b_color = eff.get("accent_color", "#38bdf8")
+                dyn_path = temp_dir / f"dynamic_badge_{b_idx_counter}.png"
+                render_dynamic_badge(b_emoji, b_title, b_color, str(dyn_path))
+                badge_path = str(dyn_path)
+
+            inputs.extend(["-i", badge_path])
             badge_inputs_map.append({
                 "idx": curr_input_idx,
                 "start": eff["time"],

@@ -39,7 +39,13 @@ Respond ONLY with a JSON array of 5 search strings:
 ["query 1", "query 2", "query 3", "query 4", "query 5"]
 """
 
-    models_to_try = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-flash-latest"]
+    models_to_try = [
+        "gemini-3.1-flash-lite",
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-3.6-flash",
+        "gemini-flash-latest"
+    ]
     for model_name in models_to_try:
         try:
             res = client.models.generate_content(
