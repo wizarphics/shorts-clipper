@@ -187,21 +187,41 @@ def upload_youtube_browser(video_path: str, title: str, description: str = "") -
 
         # Check if there is a 'SKIP TO YOUTUBE STUDIO' banner
         try:
-            skip_btn = page.query_selector("text='SKIP TO YOUTUBE STUDIO', [aria-label='SKIP TO YOUTUBE STUDIO']")
-            if skip_btn:
-                skip_btn.click()
-                time.sleep(3)
+            for s_sel in ["text=SKIP TO YOUTUBE STUDIO", "[aria-label='SKIP TO YOUTUBE STUDIO']"]:
+                s_el = page.query_selector(s_sel)
+                if s_el:
+                    s_el.click()
+                    time.sleep(3)
+                    break
         except Exception:
             pass
 
         # 1. Click CREATE button
-        page.wait_for_selector("#create-icon, ytcp-button#create-icon, button[aria-label='Create'], ytcp-button:has-text('Create')", timeout=25000)
-        create_btn = page.query_selector("#create-icon, ytcp-button#create-icon, button[aria-label='Create'], ytcp-button:has-text('Create')")
+        create_btn = None
+        for c_sel in ["#create-icon", "ytcp-button#create-icon", "button[aria-label='Create']", "text=Create"]:
+            try:
+                c_el = page.query_selector(c_sel)
+                if c_el:
+                    create_btn = c_el
+                    break
+            except Exception:
+                continue
+        if not create_btn:
+            create_btn = page.wait_for_selector("#create-icon, ytcp-button#create-icon, button[aria-label='Create']", timeout=25000)
         create_btn.click()
         time.sleep(2)
 
         # 2. Click Upload Videos item
-        upload_item = page.query_selector("tp-yt-paper-item#text-item-0, #text-item-0, ytcp-text-menu:has-text('Upload videos'), text='Upload videos'")
+        upload_item = None
+        for sel in ["tp-yt-paper-item#text-item-0", "#text-item-0", "text=Upload videos"]:
+            try:
+                el = page.query_selector(sel)
+                if el:
+                    upload_item = el
+                    break
+            except Exception:
+                continue
+
         if upload_item:
             upload_item.click()
             time.sleep(2)
