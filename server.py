@@ -16,7 +16,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from subtitles import build_caption_groups, burn_subtitles
-from video_enhancer import enhance_video_audio
+from video_enhancer import enhance_video_audio, scan_transcript_for_effects
 from viral_finder import find_viral_candidates
 from clip import download_video, extract_audio, transcribe_audio, detect_viral_clips, cut_and_format_clip, get_video_cache_id
 
@@ -57,6 +57,7 @@ class ClipRequest(BaseModel):
     music_track: str = "tension_bed"
     add_whoosh: bool = True
     add_banner: bool = True
+    add_dynamic_effects: bool = True
     smart_face_tracking: bool = True
     target_duration: str = "short"  # 'short' (20-60s) or 'tiktok_long' (60-120s) or 'custom'
     min_sec: int = 25
@@ -148,7 +149,7 @@ def process_pipeline(req: ClipRequest):
                 smart_tracking=req.smart_face_tracking
             )
 
-            subtitled_path = vid_cache_dir / f"sub_{idx}.mp4" if (req.add_music or req.add_banner) else final_path
+            subtitled_path = vid_cache_dir / f"sub_{idx}.mp4" if (req.add_music or req.add_banner or req.add_dynamic_effects) else final_path
 
             if req.burn_captions:
                 update_state("rendering", clip_prog, f"Burning animated dynamic subtitles for clip {idx}/{total_clips}...")
@@ -160,16 +161,29 @@ def process_pipeline(req: ClipRequest):
                 subtitled_path = raw_cut_path
 
             # Video & Audio Enhancement (Music Bed + Whoosh SFX + Hook Header)
-            if req.add_music or req.add_banner or req.add_whoosh:
+            if req.add_music or req.add_banner or req.add_whoosh or req.add_dynamic_effects:
                 update_state("rendering", clip_prog, f"Adding background audio and hook styling for clip {idx}/{total_clips}...")
                 banner_text = clip.get("title", "MUST WATCH") if req.add_banner else None
+                # Scan spoken words in this clip window for contextual SFX & motion callouts
+                dynamic_fx = []
+                if req.add_dynamic_effects:
+                    dynamic_fx = scan_transcript_for_effects(
+                        segments=segments,
+                        clip_start=clip["start_time"],
+                        clip_end=clip["end_time"],
+                        min_gap=5.0
+                    )
+                    if dynamic_fx:
+                        print(f"[*] Detected {len(dynamic_fx)} contextual SFX & motion callouts for clip {idx}: {[e['word'] for e in dynamic_fx]}")
+
                 enhance_video_audio(
                     video_path=str(subtitled_path),
                     output_path=str(final_path),
                     title_banner=banner_text,
                     music_track=req.music_track if req.add_music else "none",
                     add_whoosh=req.add_whoosh,
-                    music_volume=0.08 if req.add_music else 0.0
+                    music_volume=0.08 if req.add_music else 0.0,
+                    dynamic_effects=dynamic_fx
                 )
                 if subtitled_path.exists() and subtitled_path != final_path:
                     os.remove(subtitled_path)

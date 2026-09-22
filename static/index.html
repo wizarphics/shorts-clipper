@@ -1195,6 +1195,11 @@
               <input type="checkbox" id="add-banner" checked />
               <span>🏷️ Top Viral Glass Banner</span>
             </label>
+
+            <label class="checkbox-pill" title="Scans spoken words for key triggers (money, shock, truth, warning) and auto-injects synchronized sound effects & animated motion badges">
+              <input type="checkbox" id="add-dynamic-effects" checked />
+              <span>💥 Context Sound Effects & Motion Graphics</span>
+            </label>
           </div>
 
           <button type="submit" class="btn-submit" id="submit-btn">
@@ -2544,6 +2549,7 @@
       const addMusic = document.getElementById('add-music').checked;
       const addWhoosh = document.getElementById('add-whoosh').checked;
       const addBanner = document.getElementById('add-banner').checked;
+      const addDynamicEffects = document.getElementById('add-dynamic-effects') ? document.getElementById('add-dynamic-effects').checked : true;
       const cookiesBrowser = document.getElementById('cookies-browser').value || null;
 
       submitBtn.disabled = true;
@@ -2565,6 +2571,7 @@
             add_music: addMusic,
             add_whoosh: addWhoosh,
             add_banner: addBanner,
+            add_dynamic_effects: addDynamicEffects,
             cookies_browser: cookiesBrowser
           })
         });
