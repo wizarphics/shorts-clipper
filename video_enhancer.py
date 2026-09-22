@@ -57,90 +57,156 @@ SEMANTIC_TRIGGERS = [
     }
 ]
 
-def render_colored_emoji(emoji_char: str, target_size: int = 56) -> Optional[Image.Image]:
+CACHE_DIR = BASE_DIR / "assets" / "emoji_cache"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+def get_emoji_image(emoji_str: str, size: int = 56) -> Optional[Image.Image]:
     """
-    Renders high-definition Apple Color Emoji bitmap on macOS.
-    Apple Color Emoji uses fixed 160px embedded strikes; we render and downscale smoothly.
+    Renders clean, vibrant colored emoji bitmaps.
+    First checks local Twemoji asset cache, downloads standard Twemoji if missing,
+    or falls back to macOS Apple Color Emoji bitmap strikes.
     """
-    if not emoji_char:
+    if not emoji_str:
         return None
+
+    # 1. Twemoji local cache lookup
+    try:
+        import urllib.request
+        chars = [f"{ord(c):x}" for c in emoji_str if ord(c) != 0xfe0f]
+        code = "-".join(chars)
+        cached = CACHE_DIR / f"{code}.png"
+        if not cached.exists():
+            url = f"https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/{code}.png"
+            urllib.request.urlretrieve(url, cached)
+        if cached.exists():
+            im = Image.open(cached).convert("RGBA")
+            im = im.resize((size, size), Image.Resampling.LANCZOS)
+            return im
+    except Exception:
+        pass
+
+    # 2. Apple Color Emoji fallback
     for p in ["/System/Library/Fonts/Apple Color Emoji.ttc", "/System/Library/Fonts/Apple Color Emoji.ttf"]:
         if os.path.exists(p):
             try:
                 efont = ImageFont.truetype(p, 160)
                 canvas = Image.new("RGBA", (260, 260), (0, 0, 0, 0))
                 d = ImageDraw.Draw(canvas)
-                d.text((20, 20), emoji_char, font=efont, embedded_color=True)
+                d.text((20, 20), emoji_str, font=efont, embedded_color=True)
                 bbox = canvas.getbbox()
                 if bbox:
                     canvas = canvas.crop(bbox)
-                canvas.thumbnail((target_size, target_size), Image.Resampling.LANCZOS)
+                canvas.thumbnail((size, size), Image.Resampling.LANCZOS)
                 return canvas
             except Exception:
                 pass
+
     return None
 
 def render_dynamic_badge(
     emoji_char: str,
     badge_title: str,
     accent_hex: str = "#38bdf8",
+    style_type: str = "glass",
     out_path: Optional[str] = None
 ) -> Image.Image:
     """
-    Renders a modern, cinematic glassmorphism motion badge pill (1080p width context).
-    Scaled dynamically based on title length and includes crisp full-color Apple emojis.
+    Renders diverse, high-engagement viral motion graphic badges in multiple styles:
+    - 'glass': Sleek dark translucent glassmorphism with neon border (Opus Clip standard)
+    - 'alert': High-contrast solid caution/emergency badge with outer glow
+    - 'cyber': Futuristic angled sci-fi badge with tech cuts
+    - 'sticker': Bold pop-art sticker with heavy 3D shadow
+    - 'pill': Compact modern gradient pill
     """
     clean_title = badge_title.strip().upper()
-    width = 760
-    height = 130
-    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Parse accent color
     h = accent_hex.lstrip("#")
     try:
         rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
     except Exception:
-        rgb = (56, 189, 248) # Default cyan
+        rgb = (56, 189, 248)
 
-    # Soft dark drop shadow
-    draw.rounded_rectangle([8, 8, width - 8, height - 8], radius=28, fill=(0, 0, 0, 160))
+    font_title = get_font(34)
+    emoji_img = get_emoji_image(emoji_char, size=52)
 
-    # Dark translucent glass pill with neon border
-    draw.rounded_rectangle([4, 4, width - 12, height - 12], radius=26, fill=(15, 23, 42, 235), outline=(*rgb, 240), width=4)
+    # Measure text bounds accurately
+    dummy = Image.new("RGBA", (1, 1))
+    d_dummy = ImageDraw.Draw(dummy)
+    bbox = d_dummy.textbbox((0, 0), clean_title, font=font_title)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
 
-    # Subtle inner top glow highlight
-    draw.line([(32, 12), (width - 44, 12)], fill=(255, 255, 255, 70), width=2)
+    # Shrink font if title is long
+    if text_w > 520:
+        font_title = get_font(28)
+        bbox = d_dummy.textbbox((0, 0), clean_title, font=font_title)
+        text_w = bbox[2] - bbox[0]
+        text_h = bbox[3] - bbox[1]
 
-    font_title = get_font(36)
-    emoji_img = render_colored_emoji(emoji_char, target_size=54)
+    ew = emoji_img.size[0] if emoji_img else 0
+    gap = 18 if emoji_img else 0
+    content_w = ew + gap + text_w
 
-    bbox = draw.textbbox((0, 0), clean_title, font=font_title)
-    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    width = max(580, content_w + 100)
+    height = 126
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
 
-    # If too wide, fallback to smaller font
-    if tw > (width - (110 if emoji_img else 60)):
-        font_title = get_font(30)
-        bbox = draw.textbbox((0, 0), clean_title, font=font_title)
-        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    style = style_type.lower()
+    if style not in ["glass", "alert", "cyber", "sticker", "pill"]:
+        style = "glass"
 
+    text_color = (255, 255, 255, 255)
+
+    if style == "alert":
+        # Vibrant high-energy banner with white outline
+        draw.rounded_rectangle([8, 8, width - 8, height - 8], radius=24, fill=(0, 0, 0, 180))
+        draw.rounded_rectangle([4, 4, width - 12, height - 12], radius=22, fill=(*rgb, 250), outline=(255, 255, 255, 240), width=4)
+        text_color = (15, 23, 42, 255) if sum(rgb) > 380 else (255, 255, 255, 255)
+
+    elif style == "cyber":
+        # Sharp futuristic angled cuts with glowing accent lines
+        draw.polygon(
+            [(28, 8), (width - 12, 8), (width - 28, height - 8), (12, height - 8)],
+            fill=(10, 15, 30, 245),
+            outline=(*rgb, 255)
+        )
+        draw.line([(34, 16), (width - 24, 16)], fill=(*rgb, 180), width=2)
+        text_color = (255, 255, 255, 255)
+
+    elif style == "sticker":
+        # White sticker backing with deep 3D pop shadow
+        draw.rounded_rectangle([10, 12, width - 8, height - 4], radius=26, fill=(0, 0, 0, 190))
+        draw.rounded_rectangle([4, 4, width - 12, height - 12], radius=24, fill=(255, 255, 255, 255), outline=(*rgb, 255), width=5)
+        text_color = (*rgb, 255)
+
+    elif style == "pill":
+        # Compact rounded capsule
+        draw.rounded_rectangle([8, 8, width - 8, height - 8], radius=40, fill=(0, 0, 0, 160))
+        draw.rounded_rectangle([4, 4, width - 12, height - 12], radius=40, fill=(20, 25, 45, 240), outline=(*rgb, 240), width=3)
+        text_color = (*rgb, 255)
+
+    else: # glass (default)
+        draw.rounded_rectangle([8, 8, width - 8, height - 8], radius=28, fill=(0, 0, 0, 160))
+        draw.rounded_rectangle([4, 4, width - 12, height - 12], radius=26, fill=(15, 23, 42, 235), outline=(*rgb, 240), width=4)
+        draw.line([(32, 12), (width - 44, 12)], fill=(255, 255, 255, 70), width=2)
+        text_color = (*rgb, 255)
+
+    # Position content centered horizontally
+    start_x = (width - content_w) // 2
     if emoji_img:
-        ew, eh = emoji_img.size
-        gap = 18
-        total_content_w = ew + gap + tw
-        start_x = (width - total_content_w) // 2
-        ey = (height - eh) // 2
+        ey = (height - emoji_img.size[1]) // 2
         img.paste(emoji_img, (start_x, ey), emoji_img)
         tx = start_x + ew + gap
-        ty = (height - th) // 2 - 4
     else:
-        tx = (width - tw) // 2
-        ty = (height - th) // 2 - 4
+        tx = start_x
 
-    # Text drop shadow
-    draw.text((tx + 2, ty + 2), clean_title, font=font_title, fill=(0, 0, 0, 220))
-    # Crisp glowing title
-    draw.text((tx, ty), clean_title, font=font_title, fill=(*rgb, 255))
+    ty = (height - text_h) // 2 - 4
+
+    # Drop shadow for text unless black text on bright background
+    if style != "alert" or text_color == (255, 255, 255, 255):
+        draw.text((tx + 2, ty + 2), clean_title, font=font_title, fill=(0, 0, 0, 210))
+
+    draw.text((tx, ty), clean_title, font=font_title, fill=text_color)
 
     if out_path:
         img.save(out_path, "PNG")
@@ -179,10 +245,11 @@ Direct 2 to 4 high-impact visual callouts / motion badges and sound effects sync
 Rules:
 1. "time": Timestamp in seconds (float between 1.5 and {max(2.0, clip_duration - 1.5):.1f}) when the badge & sound should hit.
 2. "badge_title": 2 to 4 punchy, viral words summarizing that specific moment (e.g., "50/50 DATING TRAP", "BRUTAL TRUTH", "PASSIVE INCOME", "RED FLAG WARNING", "CHESS MOVE", "SECRET FORMULA").
-3. "emoji": Exactly one fitting emoji (e.g. "🚨", "💸", "☕", "🧠", "🔥", "⚠️", "👑", "🎯").
-4. "sfx": One of: "boom", "ding", "cash", "pop", "whoosh".
-5. "accent_color": A vibrant hex color (e.g. "#ef4444" for warning/red flags, "#22c55e" for money/success, "#eab308" for truth/gold, "#38bdf8" for facts/advice, "#a855f7" for mindset/psychology).
-6. Ensure each cue is at least 4.5 seconds apart from the previous cue so the video never feels cluttered.
+3. "emoji": Exactly one fitting emoji (e.g. "🚨", "💸", "☕", "🧠", "🔥", "⚠️", "👑", "🎯", "💰", "🛑", "⚡", "💯", "💡", "🚀", "📈", "💔", "😱").
+4. "badge_style": Choose the best visual layout for this moment from: "glass" (sleek dark neon), "alert" (high-contrast punchy warning), "cyber" (futuristic angled cuts), "sticker" (pop-art white sticker backing), "pill" (smooth rounded capsule).
+5. "sfx": One of: "boom", "ding", "cash", "pop", "whoosh".
+6. "accent_color": A vibrant hex color (e.g. "#ef4444" for warning/red flags, "#22c55e" for money/success, "#eab308" for truth/gold, "#38bdf8" for facts/advice, "#a855f7" for mindset/psychology).
+7. Ensure each cue is at least 4.5 seconds apart from the previous cue so the video never feels cluttered.
 
 Respond ONLY with a JSON array:
 [
@@ -190,6 +257,7 @@ Respond ONLY with a JSON array:
     "time": 3.5,
     "duration": 2.2,
     "badge_title": "BRUTAL REALITY",
+    "badge_style": "alert",
     "emoji": "⚠️",
     "sfx": "boom",
     "accent_color": "#ef4444"
@@ -237,6 +305,7 @@ Respond ONLY with a JSON array:
                                 "time": round(t, 2),
                                 "duration": float(item.get("duration", 2.2)),
                                 "badge_title": str(item.get("badge_title", "KEY MOMENT")),
+                                "badge_style": str(item.get("badge_style", "glass")),
                                 "emoji": str(item.get("emoji", "🔥")),
                                 "sfx_file": str(AUDIO_DIR / sfx_name),
                                 "accent_color": str(item.get("accent_color", "#38bdf8")),
@@ -486,8 +555,9 @@ def enhance_video_audio(
                 b_title = eff.get("badge_title", "KEY MOMENT")
                 b_emoji = eff.get("emoji", "🔥")
                 b_color = eff.get("accent_color", "#38bdf8")
+                b_style = eff.get("badge_style", "glass")
                 dyn_path = temp_dir / f"dynamic_badge_{b_idx_counter}.png"
-                render_dynamic_badge(b_emoji, b_title, b_color, str(dyn_path))
+                render_dynamic_badge(b_emoji, b_title, b_color, style_type=b_style, out_path=str(dyn_path))
                 badge_path = str(dyn_path)
 
             inputs.extend(["-i", badge_path])
@@ -510,8 +580,11 @@ def enhance_video_audio(
             b_idx = b_info["idx"]
             b_start = b_info["start"]
             b_end = b_info["end"]
+            # Dynamic slide-up pop motion graphics:
+            # Starts 50px lower and smoothly slides up into position over 0.22s, then stays steady until b_end
+            anim_y = f"if(lt(t,{b_start}+0.22),900+50*(1-(t-{b_start})/0.22),900)"
             video_filters.append(
-                f"[{last_v_tag}][{b_idx}:v]overlay=(W-w)/2:980:enable='between(t,{b_start},{b_end})'[{next_tag}]"
+                f"[{last_v_tag}][{b_idx}:v]overlay=x='(W-w)/2':y='{anim_y}':enable='between(t,{b_start},{b_end})'[{next_tag}]"
             )
             last_v_tag = next_tag
 
