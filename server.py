@@ -19,6 +19,7 @@ from subtitles import build_caption_groups, burn_subtitles
 from video_enhancer import enhance_video_audio, scan_transcript_for_effects
 from viral_finder import find_viral_candidates
 from clip import download_video, extract_audio, transcribe_audio, detect_viral_clips, cut_and_format_clip, get_video_cache_id
+from remotion_renderer import is_remotion_available, build_remotion_subtitles, build_remotion_motion_badges, render_with_remotion
 
 load_dotenv()
 
@@ -58,6 +59,7 @@ class ClipRequest(BaseModel):
     add_whoosh: bool = True
     add_banner: bool = True
     add_dynamic_effects: bool = True
+    use_remotion: bool = True
     smart_face_tracking: bool = True
     target_duration: str = "short"  # 'short' (20-60s) or 'tiktok_long' (60-120s) or 'custom'
     min_sec: int = 25
@@ -149,47 +151,93 @@ def process_pipeline(req: ClipRequest):
                 smart_tracking=req.smart_face_tracking
             )
 
-            subtitled_path = vid_cache_dir / f"sub_{idx}.mp4" if (req.add_music or req.add_banner or req.add_dynamic_effects) else final_path
+            clip_dur = clip["end_time"] - clip["start_time"]
+            use_remotion_engine = req.use_remotion and is_remotion_available()
 
-            if req.burn_captions:
-                update_state("rendering", clip_prog, f"Burning animated dynamic subtitles for clip {idx}/{total_clips}...")
-                groups = build_caption_groups(segments, clip["start_time"], clip["end_time"], words_per_group=3)
-                burn_subtitles(str(raw_cut_path), groups, str(subtitled_path))
-                if raw_cut_path.exists():
-                    os.remove(raw_cut_path)
-            else:
-                subtitled_path = raw_cut_path
+            # Scan spoken words in this clip window for contextual SFX & motion callouts
+            dynamic_fx = []
+            if req.add_dynamic_effects:
+                update_state("rendering", clip_prog, f"AI Director generating motion graphics & SFX for clip {idx}/{total_clips}...")
+                dynamic_fx = scan_transcript_for_effects(
+                    segments=segments,
+                    clip_start=clip["start_time"],
+                    clip_end=clip["end_time"],
+                    min_gap=4.5,
+                    use_ai=True
+                )
+                if dynamic_fx:
+                    labels = [e.get("badge_title", e.get("word", "")) for e in dynamic_fx]
+                    print(f"[*] AI Motion & SFX Director added {len(dynamic_fx)} effects for clip {idx}: {labels}")
 
-            # Video & Audio Enhancement (Music Bed + Whoosh SFX + Hook Header)
-            if req.add_music or req.add_banner or req.add_whoosh or req.add_dynamic_effects:
-                update_state("rendering", clip_prog, f"Adding background audio and hook styling for clip {idx}/{total_clips}...")
-                banner_text = clip.get("title", "MUST WATCH") if req.add_banner else None
-                # Scan spoken words in this clip window for contextual SFX & motion callouts
-                dynamic_fx = []
-                if req.add_dynamic_effects:
-                    update_state("rendering", clip_prog, f"AI Director generating motion graphics & SFX for clip {idx}/{total_clips}...")
-                    dynamic_fx = scan_transcript_for_effects(
-                        segments=segments,
-                        clip_start=clip["start_time"],
-                        clip_end=clip["end_time"],
-                        min_gap=4.5,
-                        use_ai=True
+            banner_text = clip.get("title", "MUST WATCH") if req.add_banner else None
+
+            if use_remotion_engine:
+                update_state("rendering", clip_prog, f"Rendering with Remotion React Motion Engine for clip {idx}/{total_clips}...")
+                remotion_subs = build_remotion_subtitles(
+                    segments=segments,
+                    clip_start=clip["start_time"],
+                    clip_end=clip["end_time"],
+                    animation="pop"
+                ) if req.burn_captions else None
+
+                remotion_badges = build_remotion_motion_badges(
+                    dynamic_effects=dynamic_fx,
+                    clip_duration=clip_dur
+                )
+
+                # Render video + Remotion graphics (spring badges, animated subtitles, hook banner)
+                remotion_out_path = vid_cache_dir / f"remotion_out_{idx}.mp4"
+                try:
+                    render_with_remotion(
+                        video_path=str(raw_cut_path),
+                        output_path=str(remotion_out_path),
+                        duration_sec=clip_dur,
+                        subtitles_config=remotion_subs,
+                        hook_text=banner_text,
+                        motion_badges=remotion_badges,
+                        fps=30
                     )
-                    if dynamic_fx:
-                        labels = [e.get("badge_title", e.get("word", "")) for e in dynamic_fx]
-                        print(f"[*] AI Motion & SFX Director added {len(dynamic_fx)} effects for clip {idx}: {labels}")
+                    base_for_audio = str(remotion_out_path)
+                except Exception as ex:
+                    print(f"[!] Remotion render failed, falling back to FFmpeg overlays: {ex}")
+                    use_remotion_engine = False
 
+            if not use_remotion_engine:
+                subtitled_path = vid_cache_dir / f"sub_{idx}.mp4" if (req.add_music or req.add_banner or req.add_dynamic_effects) else final_path
+                if req.burn_captions:
+                    update_state("rendering", clip_prog, f"Burning animated dynamic subtitles for clip {idx}/{total_clips}...")
+                    groups = build_caption_groups(segments, clip["start_time"], clip["end_time"], words_per_group=3)
+                    burn_subtitles(str(raw_cut_path), groups, str(subtitled_path))
+                else:
+                    subtitled_path = raw_cut_path
+                base_for_audio = str(subtitled_path)
+
+            # Audio Studio Enhancement (Music Bed + Whoosh SFX + Dynamic SFX)
+            if req.add_music or req.add_whoosh or dynamic_fx:
+                update_state("rendering", clip_prog, f"Mastering audio & synchronizing SFX for clip {idx}/{total_clips}...")
+                # When using remotion, motion badges are already rendered in video, so we only pass SFX to audio enhancer
+                fx_for_audio = dynamic_fx if not use_remotion_engine else [
+                    {k: v for k, v in e.items() if k != "graphic_file"} for e in dynamic_fx
+                ]
                 enhance_video_audio(
-                    video_path=str(subtitled_path),
+                    video_path=base_for_audio,
                     output_path=str(final_path),
-                    title_banner=banner_text,
+                    title_banner=banner_text if not use_remotion_engine else None,
                     music_track=req.music_track if req.add_music else "none",
                     add_whoosh=req.add_whoosh,
                     music_volume=0.08 if req.add_music else 0.0,
-                    dynamic_effects=dynamic_fx
+                    dynamic_effects=fx_for_audio
                 )
-                if subtitled_path.exists() and subtitled_path != final_path:
-                    os.remove(subtitled_path)
+            else:
+                shutil.copy(base_for_audio, final_path)
+
+            # Clean up intermediate video files
+            for p_clean in [raw_cut_path, vid_cache_dir / f"sub_{idx}.mp4", vid_cache_dir / f"remotion_out_{idx}.mp4"]:
+                if p_clean.exists() and p_clean != final_path:
+                    try:
+                        os.remove(p_clean)
+                    except Exception:
+                        pass
 
             rendered_clips.append({
                 "title": clip.get("title", f"Clip {idx}"),

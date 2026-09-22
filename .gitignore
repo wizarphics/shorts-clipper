@@ -50,3 +50,7 @@ server.log
 .Trashes
 .vscode/
 .idea/
+.sessions/
+openshorts_repo/
+remotion/node_modules/
+remotion/.remotion/

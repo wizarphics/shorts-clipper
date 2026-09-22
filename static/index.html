@@ -1200,6 +1200,11 @@
               <input type="checkbox" id="add-dynamic-effects" checked />
               <span>🎬 AI Motion Director & Dynamic Sound FX</span>
             </label>
+
+            <label class="checkbox-pill" style="border-color: rgba(168, 85, 247, 0.4); background: rgba(88, 28, 135, 0.2);" title="Uses Remotion (React + Headless Chrome) for fluid spring physics, bouncy vector emojis, and kinetic pop subtitles (like Opus Clip & OpenShorts)">
+              <input type="checkbox" id="use-remotion" checked />
+              <span>⚛️ Remotion React Engine (Spring Physics & Emojis)</span>
+            </label>
           </div>
 
           <button type="submit" class="btn-submit" id="submit-btn">
@@ -2550,6 +2555,7 @@
       const addWhoosh = document.getElementById('add-whoosh').checked;
       const addBanner = document.getElementById('add-banner').checked;
       const addDynamicEffects = document.getElementById('add-dynamic-effects') ? document.getElementById('add-dynamic-effects').checked : true;
+      const useRemotion = document.getElementById('use-remotion') ? document.getElementById('use-remotion').checked : true;
       const cookiesBrowser = document.getElementById('cookies-browser').value || null;
 
       submitBtn.disabled = true;
@@ -2572,6 +2578,7 @@
             add_whoosh: addWhoosh,
             add_banner: addBanner,
             add_dynamic_effects: addDynamicEffects,
+            use_remotion: useRemotion,
             cookies_browser: cookiesBrowser
           })
         });
